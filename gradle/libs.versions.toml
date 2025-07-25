@@ -1,0 +1,118 @@
+[versions]
+kotlin = "2.1.20"
+kotlinxDatetime = "0.6.1"
+kotlinxSerializationJSON = "1.7.3"
+kotlinxCoroutines = "1.9.0"
+kotlinx-cli = "0.3.6"
+spark = "1.10-SNAPSHOT"
+
+adventure = "4.23.0"
+ktorm = "4.1.0"
+hikaricp = "5.1.0"
+minestom = "CHUNKBATCH-LOCKING-JAM-2"
+http4k = "6.2.0.0"
+slf4j = "2.0.12"
+logback = "1.5.18"
+ktor-version = "3.1.1"
+classgraph = "4.8.179"
+bimap = "1.1.0"
+creative = "1.8.4-everbuild-R2-SNAPSHOT"
+reflections = "0.10.2"
+configurate = "3.7.1"
+commons-compress = "1.27.1"
+
+luckperms-minestom = "5.4-SNAPSHOT"
+luckperms-api = "5.4-SNAPSHOT"
+
+shadow = "8.3.0"
+polar = "1.14.6"
+mccoroutine = "2.21.0"
+exposed = "0.46.0"
+postgresql = "42.5.1"
+hikariCP = "5.0.1"
+flyway = "10.8.1"
+json = "20231013"
+minestomPVP = "56a831b41c"
+evalEx = "3.6.0-SNAPSHOT"
+catppuccin = "2.0.3"
+ambrosia = "1.0.2-SNAPSHOT"
+mongodb = "5.5.0"
+
+[libraries]
+kotlinGradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+kotlinxDatetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
+kotlinxSerialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJSON" }
+kotlinxCoroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
+kotlinxCli = { module = "org.jetbrains.kotlinx:kotlinx-cli-jvm", version.ref = "kotlinx-cli" }
+kotlinReflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
+
+adventureApi = { module = "net.kyori:adventure-api", version.ref = "adventure" }
+adventureNbt = { module = "net.kyori:adventure-nbt", version.ref = "adventure" }
+adventureTextMinimessage = { module = "net.kyori:adventure-text-minimessage", version.ref = "adventure" }
+adventureTextGson = { module = "net.kyori:adventure-text-serializer-gson", version.ref = "adventure" }
+adventureTextLegacy = { module = "net.kyori:adventure-text-serializer-json-legacy-impl", version.ref = "adventure" }
+
+ktormCore = { module = "org.ktorm:ktorm-core", version.ref = "ktorm" }
+ktormSqlite = { module = "org.ktorm:ktorm-support-sqlite", version.ref = "ktorm" }
+hikaricp = { module = "com.zaxxer:HikariCP", version.ref = "hikaricp" }
+reflections = { module = "org.reflections:reflections", version.ref = "reflections" }
+
+minestom = { module = "net.minestom:minestom-snapshots", version.ref = "minestom" }
+
+slf4jApi = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
+logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
+
+http4k = { module = "org.http4k:http4k-core", version.ref = "http4k" }
+classgraph = { module = "io.github.classgraph:classgraph", version.ref = "classgraph" }
+bimap = { module = "io.michaelrocks.bimap:bimap", version.ref = "bimap" }
+
+configurateHocon = { module = "ninja.leaping.configurate:configurate-hocon", version.ref = "configurate" }
+configurateYaml = { module = "ninja.leaping.configurate:configurate-yaml", version.ref = "configurate" }
+
+luckpermsMinestom = { module = "dev.lu15:luckperms-minestom", version.ref = "luckperms-minestom" }
+luckpermsApi = { module = "net.luckperms:api", version.ref = "luckperms-api" }
+
+ktorServerCore = { module = "io.ktor:ktor-server-core", version.ref = "ktor-version" }
+ktorServerSse = { module = "io.ktor:ktor-server-sse", version.ref = "ktor-version" }
+ktorServerNetty = { module = "io.ktor:ktor-server-netty", version.ref = "ktor-version" }
+ktorServerConfigYaml = { module = "io.ktor:ktor-server-config-yaml", version.ref = "ktor-version" }
+spark = { module = "dev.lu15:spark-minestom", version.ref = "spark" }
+
+commons-compress = { module = "org.apache.commons:commons-compress", version.ref = "commons-compress" }
+
+creativeApi = { module = "team.unnamed:creative-api", version.ref = "creative" }
+creativeMinecraft = { module = "team.unnamed:creative-serializer-minecraft", version.ref = "creative" }
+
+ambrosia = { module = "com.github.Flo0.Ambrosia:AmbrosiaSpigot", version.ref = "ambrosia" }
+mongodb = { module = "org.mongodb:mongodb-driver-sync", version.ref = "mongodb" }
+
+polar = { module = "dev.hollowcube:polar", version.ref = "polar" }
+mccoroutineMinestomApi = { module = "com.github.shynixn.mccoroutine:mccoroutine-minestom-api", version.ref = "mccoroutine" }
+mccoroutineMinestomCore = { module = "com.github.shynixn.mccoroutine:mccoroutine-minestom-core", version.ref = "mccoroutine" }
+exposedCore = { module = "org.jetbrains.exposed:exposed-core", version.ref = "exposed" }
+exposedDao = { module = "org.jetbrains.exposed:exposed-dao", version.ref = "exposed" }
+exposedJdbc = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "exposed" }
+exposedJson = { module = "org.jetbrains.exposed:exposed-json", version.ref = "exposed" }
+postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" }
+hikariCP = { module = "com.zaxxer:HikariCP", version.ref = "hikariCP" }
+flywayCore = { module = "org.flywaydb:flyway-core", version.ref = "flyway" }
+flywayPostgresql = { module = "org.flywaydb:flyway-database-postgresql", version.ref = "flyway" }
+json = { module = "org.json:json", version.ref = "json" }
+minestomPVP = { module = "io.github.togar2:MinestomPvP", version.ref = "minestomPVP" }
+evalEx = { module = "com.ezylang:EvalEx", version.ref = "evalEx" }
+
+[bundles]
+kotlinxEcosystem = ["kotlinxDatetime", "kotlinxSerialization", "kotlinxCoroutines", "kotlinxCli"]
+adventure = ["adventureApi", "adventureNbt", "adventureTextMinimessage", "adventureTextGson", "adventureTextLegacy"]
+database = ["ktormCore", "ktormSqlite", "hikaricp"]
+utils = ["http4k", "classgraph", "bimap", "reflections"]
+ktor = ["ktorServerCore", "ktorServerSse", "ktorServerNetty", "ktorServerConfigYaml"]
+creative = ["creativeApi", "creativeMinecraft"]
+luckperms = ["configurateYaml", "configurateHocon", "luckpermsApi", "luckpermsMinestom"]
+exposed = ["exposedCore", "exposedDao", "exposedJdbc", "exposedJson"]
+
+
+[plugins]
+kotlinPluginSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+ktor = { id = "io.ktor.plugin", version.ref = "ktor-version" }
+shadowPlugin = { id = "com.gradleup.shadow", version.ref = "shadow" }
