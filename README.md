@@ -1,4 +1,6 @@
-# PlaygroundMinestom
+# Playground2
+
+A complete recode of [Playground](https://github.com/al3xwarrior/Playground) using [Minestom](https://minestom.net/) to optimize performance! Also includes more extensive systems and functionality.
 
 ## Project Structure
 - `app`: the folder with basically everything in it, should really be called minestom, but meh
