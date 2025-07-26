@@ -58,6 +58,12 @@ object MenuAndUtilsCharacters : ContentList() {
         ascent(13)
     }
 
+    val functionSearchMenu = createBitmapCharacter("function_search_menu") {
+        texture(Texture("font/menu/function_search_menu"))
+        height(256)
+        ascent(13)
+    }
+
     val map = createBitmapCharacter("war_map") {
         texture(Texture("jam/general_map"))
         height(53)

@@ -30,8 +30,8 @@ dependencies {
 
 
 
-//    implementation(libs.mccoroutineMinestomApi)
-//    implementation(libs.mccoroutineMinestomCore)
+    implementation(libs.mccoroutineMinestomApi)
+    implementation(libs.mccoroutineMinestomCore)
 
     implementation("xyz.xenondevs.invui:invui-kotlin:1.47")
     implementation(libs.evalEx)

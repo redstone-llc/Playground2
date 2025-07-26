@@ -8,8 +8,11 @@ import llc.redstone.playground.utils.setInstanceSafe
 import llc.redstone.playground.utils.success
 import net.minestom.server.command.CommandSender
 import net.minestom.server.coordinate.Pos
+import net.minestom.server.dialog.Dialog
+import net.minestom.server.dialog.DialogMetadata
 import net.minestom.server.entity.GameMode
 import net.minestom.server.entity.Player
+import net.minestom.server.network.packet.server.common.ShowDialogPacket
 import org.everbuild.celestia.orion.platform.minestom.api.command.Arg
 import org.everbuild.celestia.orion.platform.minestom.api.command.Kommand
 
@@ -30,15 +33,20 @@ object PlaygroundCommand: Kommand("playground", "pg") {
         }
 
         executes(Arg.literal("create")) {
-            var sandbox = createSandbox(player)
-            if (sandbox.instance == null) return@executes player.err("An error occurred while creating your sandbox instance.")
+            try {
+                var sandbox = createSandbox(player)
+                if (sandbox.instance == null) return@executes player.err("An error occurred while creating your sandbox instance.")
 
-            player.setInstance(sandbox.instance!!, Pos(0.0, 61.0, 0.0))
-            player.gameMode = GameMode.CREATIVE
+                player.setInstance(sandbox.instance!!, Pos(0.0, 61.0, 0.0))
+                player.gameMode = GameMode.CREATIVE
 
-            sandbox.startEventListener()
+                sandbox.startEventListener()
 
-            player.success("You have been teleported to your sandbox instance!")
+                player.success("You have been teleported to your sandbox instance!")
+            } catch (e: Exception) {
+                e.printStackTrace()
+                player.err("An error occurred while creating your sandbox: ${e.message}")
+            }
         }
 
         executes(Arg.literal("test")) {
@@ -57,7 +65,9 @@ object PlaygroundCommand: Kommand("playground", "pg") {
 
     fun test(sender: Player) {
         sender.success("Opening the test menu...")
-        TestMenu().open(sender)
+        ShowDialogPacket(Dialog.Notice(
+            DialogMetadata(
+
     }
 
     fun goto(sender: Player, uuid: String) {

@@ -110,7 +110,7 @@ fun main(args: Array<String>) {
             MinecraftResourcePackWriter
                 .builder()
                 .prettyPrinting(true)
-                .targetPackFormat(46)
+                .targetPackFormat(63)
                 .build()
                 .writeToDirectory(resourcesDir, pack)
             MinecraftResourcePackWriter.minecraft().writeToDirectory(resourcesDir, pack)

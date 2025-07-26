@@ -2,6 +2,7 @@ package llc.redstone.playground
 
 import com.gestankbratwurst.ambrosia.Ambrosia
 import com.gestankbratwurst.ambrosia.impl.mongodb.MongoAmbrosia
+import com.google.gson.Gson
 import com.mongodb.ConnectionString
 import com.mongodb.MongoClientSettings
 import com.mongodb.client.MongoClient
@@ -37,7 +38,7 @@ import java.nio.file.Path
 
 object Playground : OrionServer() {
     lateinit var mongoAmbrosia: MongoAmbrosia
-
+    lateinit var gson: Gson
 
     init {
         Loading.start("Pre-Initializing Playground") { initMinecraftServer(server); message("Pre-Initialized Playground", 1.0) }
@@ -86,6 +87,9 @@ object Playground : OrionServer() {
                         .construct {
                             it.registerTypeAdapter(EntityType::class.java, EntityTypeTypeAdapter())
                             it.registerTypeAdapter(Action::class.java, ActionTypeAdapter())
+
+                            gson = it.create()
+                            it
                         }
                         .database(database)
                         .build()

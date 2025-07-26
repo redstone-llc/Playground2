@@ -86,6 +86,9 @@ object GlobalIcons : ContentList("global") {
     val iconXGreen = globalIcon("icon_x_green")
     val iconXRed = globalIcon("icon_x_red")
 
+    val inventoryPart = globalIcon("inventory_part")
+    val empty = globalIcon("empty")
+
     private fun globalIcon(name: String) =
         createItem(name) {
             model(createModel {

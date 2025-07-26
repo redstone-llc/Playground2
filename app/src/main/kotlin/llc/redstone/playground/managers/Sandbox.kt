@@ -1,9 +1,12 @@
 package llc.redstone.playground.managers
 
-import net.hollowcube.polar.AnvilPolar
-import net.hollowcube.polar.PolarLoader
-import net.hollowcube.polar.PolarReader
-import net.hollowcube.polar.PolarWriter
+import llc.redstone.playground.action.ActionExecutor
+import llc.redstone.playground.database.Sandbox
+import llc.redstone.playground.database.SandboxInstanceManager
+import llc.redstone.playground.database.SandboxManager
+import llc.redstone.playground.feature.events.EventType
+import llc.redstone.playground.sandbox.createTemplatePlatform
+import net.hollowcube.polar.*
 import net.minestom.server.MinecraftServer
 import net.minestom.server.coordinate.Pos
 import net.minestom.server.entity.Player
@@ -16,12 +19,6 @@ import net.minestom.server.event.trait.PlayerEvent
 import net.minestom.server.instance.IChunkLoader
 import net.minestom.server.instance.InstanceContainer
 import net.minestom.server.instance.LightingChunk
-import llc.redstone.playground.action.ActionExecutor
-import llc.redstone.playground.database.Sandbox
-import llc.redstone.playground.database.SandboxInstanceManager
-import llc.redstone.playground.database.SandboxManager
-import llc.redstone.playground.feature.events.EventType
-import llc.redstone.playground.sandbox.createTemplatePlatform
 import java.nio.file.Path
 import java.util.*
 
@@ -34,26 +31,32 @@ val loadedSandboxes = mutableMapOf<String, Sandbox>()
  * Creates a new sandbox with the specified owner
  */
 fun createSandbox(player: Player): Sandbox {
-    var sandbox = SandboxManager.createSandbox(
-        player.username + "'s Sandbox",
-        UUID.randomUUID().toString(),
-        player.uuid.toString(),
-    )
+    try {
+        var sandbox = SandboxManager.createSandbox(
+            player.username + "'s Sandbox",
+            UUID.randomUUID().toString(),
+            player.uuid.toString(),
+        )
 
-    loadedSandboxes[sandbox.sandboxUUID] = sandbox
+        loadedSandboxes[sandbox.sandboxUUID] = sandbox
+        sandbox.instance = createInstance(PolarLoader(PolarWorld()))
+        sandbox.instance?.let { instance ->
+            createTemplatePlatform(instance)
+            instance.saveChunksToStorage()
+        }
 
-    sandbox.instance = createInstance(PolarLoader(AnvilPolar.anvilToPolar(Path.of("template_sandbox_world"))))
-    sandbox.instance?.let { instance ->
-        createTemplatePlatform(instance)
-        instance.saveChunksToStorage()
+        SandboxInstanceManager.createSandbox(
+            sandbox.sandboxUUID,
+            PolarWriter.write((sandbox.instance!!.chunkLoader as PolarLoader).world())
+        )
+
+        return sandbox
+
+    } catch (e: Exception) {
+        e.printStackTrace()
+        MinecraftServer.LOGGER.error("Error creating sandbox for player ${player.username}", e)
+        throw RuntimeException("Failed to create sandbox for player ${player.username}", e)
     }
-
-    SandboxInstanceManager.createSandbox(
-        sandbox.sandboxUUID,
-        PolarWriter.write((sandbox.instance!!.chunkLoader as PolarLoader).world())
-    )
-
-    return sandbox
 }
 
 /**
@@ -133,6 +136,12 @@ fun loadSandboxes() {
     for (sandbox in sandboxes) {
         loadedSandboxes[sandbox.sandboxUUID] = sandbox
         sandbox.loadInstance()
+    }
+}
+
+fun saveAllSandboxes() {
+    for (sandbox in loadedSandboxes.values) {
+        sandbox.save()
     }
 }
 

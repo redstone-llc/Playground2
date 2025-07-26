@@ -18,10 +18,10 @@ suspend fun addFontData(pack: ResourcePack, metadata: ResourcePackMetadata) {
 
     val elements = listOf(
         spacing,
-        *BrandingAndChatCharacters.getSegments(pack, codepointTrack, metadata).toTypedArray(),
+//        *BrandingAndChatCharacters.getSegments(pack, codepointTrack, metadata).toTypedArray(),
         *MenuAndUtilsCharacters.getSegments(pack, codepointTrack, metadata).toTypedArray(),
-        *InteractionMenu.getSegments(pack, codepointTrack, metadata).toTypedArray(),
-        *MiniUiCharacters.getSegments(pack, codepointTrack, metadata).toTypedArray(),
+//        *InteractionMenu.getSegments(pack, codepointTrack, metadata).toTypedArray(),
+//        *MiniUiCharacters.getSegments(pack, codepointTrack, metadata).toTypedArray(),
     )
 
     pack.font(Font.font(minecraftKey("default"), elements))

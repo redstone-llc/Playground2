@@ -28,4 +28,4 @@ include(
     "resources:data",
 )
 
-rootProject.name = "jam25"
+rootProject.name = "Playground2"

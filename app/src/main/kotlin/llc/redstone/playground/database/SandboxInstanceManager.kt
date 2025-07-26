@@ -18,6 +18,7 @@ object SandboxInstanceManager {
 
     fun createSandbox(sandboxUUID: String, instanceArray: ByteArray): SandboxInstance {
         val sandbox = SandboxInstance(sandboxUUID, instanceArray)
+        dbMap[sandboxUUID] = sandbox
         liveMap[sandboxUUID] = sandbox
         return sandbox
     }

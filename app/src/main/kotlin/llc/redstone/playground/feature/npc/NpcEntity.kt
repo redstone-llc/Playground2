@@ -1,5 +1,6 @@
 package llc.redstone.playground.feature.npc
 
+import io.github.togar2.pvp.events.PrepareAttackEvent
 import net.minestom.server.MinecraftServer
 import net.minestom.server.coordinate.Pos
 import net.minestom.server.entity.Entity
@@ -21,7 +22,7 @@ import llc.redstone.playground.feature.npc.menu.NpcEditMenu
 import llc.redstone.playground.menu.MenuItem
 import llc.redstone.playground.menu.menuItem
 import llc.redstone.playground.database.Sandbox
-//import llc.redstone.playground.utils.susListener
+import llc.redstone.playground.utils.susListener
 import org.reflections.Reflections
 import java.lang.reflect.Field
 import kotlin.random.Random
@@ -161,45 +162,45 @@ abstract class NpcEntity(
             event.entity.instance == entity.instance
         }.setPriority(-1)
         eventActions.forEach { (eventType, actions) ->
-//            node.susListener(eventType.clazz) { event ->
-//                //Handle Cooldown
-//                val cooldowns = cooldowns.getOrPut(event.entity.uuid.toString()) { HashMap() }
-//
-//                if (cooldowns.containsKey(eventType.name)) {
-//                    if (System.currentTimeMillis() - cooldowns[eventType.name]!! < eventType.cooldown) return@susListener
-//                }
-//                cooldowns[eventType.name] = System.currentTimeMillis()
-//
-//                //Shift click to open edit menu
-//                if (event is PlayerEntityInteractEvent && event.target == entity && event.player.isSneaking) {
-//                    NpcEditMenu(this, sandbox).open(event.player)
-//                }
-//
-//                //Handle actions
-//                var player: Player? = null
-//                var target: Entity = entity
-////                if (event is PrepareAttackEvent) {
-////                    if (event.target == entity && event.entity is Player) {
-////                        player = event.entity as Player
-////                        target = event.target
-////                    }
-////                }
-//
-//                if (event is PlayerEntityInteractEvent) {
-//                    if (event.target == entity) {
-//                        player = event.player
-//                        target = event.target
-//                    }
-//                }
-//
-//                executeActions(actions, target, player, sandbox, event)
-//            }
+            node.susListener(eventType.clazz) { event ->
+                //Handle Cooldown
+                val cooldowns = cooldowns.getOrPut(event.entity.uuid.toString()) { HashMap() }
+
+                if (cooldowns.containsKey(eventType.name)) {
+                    if (System.currentTimeMillis() - cooldowns[eventType.name]!! < eventType.cooldown) return@susListener
+                }
+                cooldowns[eventType.name] = System.currentTimeMillis()
+
+                //Shift click to open edit menu
+                if (event is PlayerEntityInteractEvent && event.target == entity && event.player.isSneaking) {
+                    NpcEditMenu(this, sandbox).open(event.player)
+                }
+
+                //Handle actions
+                var player: Player? = null
+                var target: Entity = entity
+                if (event is PrepareAttackEvent) {
+                    if (event.target == entity && event.entity is Player) {
+                        player = event.entity as Player
+                        target = event.target
+                    }
+                }
+
+                if (event is PlayerEntityInteractEvent) {
+                    if (event.target == entity) {
+                        player = event.player
+                        target = event.target
+                    }
+                }
+
+                executeActions(actions, target, player, sandbox, event)
+            }
         }
 
         MinecraftServer.getGlobalEventHandler().addChild(node)
     }
 
-    private suspend fun executeActions(actions: MutableList<Action>, entity: Entity, player: Player?, sandbox: Sandbox, event: Event?) {
+    private fun executeActions(actions: MutableList<Action>, entity: Entity, player: Player?, sandbox: Sandbox, event: Event?) {
         ActionExecutor(
             entity,
             player,

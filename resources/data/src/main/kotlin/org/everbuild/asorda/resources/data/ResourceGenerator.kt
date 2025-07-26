@@ -28,14 +28,14 @@ object ResourceGenerator {
 
         apply(::addMetadata)
         apply(::addLocales)
-        apply(::addContainerUtils)
+//        apply(::addContainerUtils)
         apply(::addFontData)
         apply(::addItems)
-        apply(::addModels)
-        apply(::addBlocks)
-        apply(::addShaders)
+//        apply(::addModels)
+//        apply(::addBlocks)
+//        apply(::addShaders)
 
-        resourcePack.unknownFile("assets/minecraft/atlases/blocks.json", resource("blocksAtlas.json"))
+//        resourcePack.unknownFile("assets/minecraft/atlases/blocks.json", resource("blocksAtlas.json"))
 
         LockfileService.save()
         return Pair(resourcePack, metadata)

@@ -1,8 +1,12 @@
 package llc.redstone.playground.menu.invui
 
 import llc.redstone.playground.menu.DefaultItems
+import llc.redstone.playground.menu.items.ForwardItem
+import llc.redstone.playground.menu.items.ReverseItem
+import llc.redstone.playground.utils.colorize
 import llc.redstone.playground.utils.component
 import llc.redstone.playground.utils.item
+import llc.redstone.playground.utils.spacingComp
 import net.kyori.adventure.text.Component
 import net.minestom.server.entity.Player
 import net.minestom.server.item.ItemStack
@@ -19,7 +23,7 @@ import xyz.xenondevs.invui.item.impl.SimpleItem
 
 
 class TestMenu : AnvilMenu(
-    title = MenuAndUtilsCharacters.textInputAnvil.component(-60)
+    title = MenuAndUtilsCharacters.functionSearchMenu.component(-59)
 ) {
     var search = ""
     override fun initAnvilGUI(player: Player): Gui {
@@ -27,7 +31,7 @@ class TestMenu : AnvilMenu(
             .setStructure(
                 "a # #"
             )
-            .addIngredient('a', DefaultItems.CLEAR) // where the anvil input should be
+            .addIngredient('a', ItemStack.of(Material.PAPER)) // where the anvil input should be
             .build()
     }
 
@@ -40,6 +44,8 @@ class TestMenu : AnvilMenu(
                 "# # # < # > # # #"
             )
             .addIngredient('x', Markers.CONTENT_LIST_SLOT_HORIZONTAL) // where paged items should be put
+//            .addIngredient('<', ReverseItem())
+//            .addIngredient('>', ForwardItem())
             .setContent(content())
             .build()
     }
