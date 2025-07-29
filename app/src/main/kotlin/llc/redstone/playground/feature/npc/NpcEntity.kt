@@ -22,6 +22,7 @@ import llc.redstone.playground.feature.npc.menu.NpcEditMenu
 import llc.redstone.playground.menu.MenuItem
 import llc.redstone.playground.menu.menuItem
 import llc.redstone.playground.database.Sandbox
+import llc.redstone.playground.menu.PItem
 import llc.redstone.playground.utils.susListener
 import org.reflections.Reflections
 import java.lang.reflect.Field
@@ -94,16 +95,16 @@ abstract class NpcEntity(
         }.toMutableMap()
     }
 
-    open fun distinctMenuItem(): MenuItem {
-        var item = menuItem(Material.SKELETON_SKULL)
+    open fun distinctMenuItem(): PItem {
+        var item = PItem(Material.SKELETON_SKULL)
             .name("<yellow>$name")
 
-        item.info("<yellow>Properties")
+        item.data("<yellow>Properties", "", null)
 
         for (field in this.javaClass.declaredFields) {
             val displayName = field.getAnnotation(DisplayName::class.java)
             if (displayName != null) {
-                item.info(displayName.value, field.displayValue(this))
+                item.data(displayName.value, field.displayValue(this), null)
             }
         }
 

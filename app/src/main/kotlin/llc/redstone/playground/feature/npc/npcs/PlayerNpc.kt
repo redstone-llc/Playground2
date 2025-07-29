@@ -18,6 +18,7 @@ import llc.redstone.playground.action.properties.StringPropertyAnnotation
 import llc.redstone.playground.feature.npc.NpcEntity
 import llc.redstone.playground.menu.MenuItem
 import llc.redstone.playground.database.Sandbox
+import llc.redstone.playground.menu.PItem
 import llc.redstone.playground.utils.PlaybackPlayer
 import llc.redstone.playground.utils.removeColor
 
@@ -45,14 +46,13 @@ class PlayerNpc(
         team.sendUpdatePacket()
     }
 
-    override fun distinctMenuItem(): MenuItem {
+    override fun distinctMenuItem(): PItem {
         val skinFromUUID =
             PlayerSkin.fromUuid(skin) ?: PlayerSkin.fromUsername(removeColor(name)) ?: return super.distinctMenuItem()
-        return super.distinctMenuItem()
-            .itemStack(
-                ItemStack.of(Material.PLAYER_HEAD)
-                    .with(DataComponents.PROFILE, HeadProfile(skinFromUUID))
-            )
+        val item = super.distinctMenuItem().clone()
+        item.builder = ItemStack.of(Material.PLAYER_HEAD)
+            .with(DataComponents.PROFILE, HeadProfile(skinFromUUID))
+        return item
     }
 
     override fun spawn(sandbox: Sandbox) {

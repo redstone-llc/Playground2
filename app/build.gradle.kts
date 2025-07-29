@@ -33,7 +33,7 @@ dependencies {
     implementation(libs.mccoroutineMinestomApi)
     implementation(libs.mccoroutineMinestomCore)
 
-    implementation("xyz.xenondevs.invui:invui-kotlin:1.47")
+    implementation("xyz.xenondevs.invui:invui-kotlin:1.48")
     implementation(libs.evalEx)
 
     implementation("com.github.ben-manes.caffeine:caffeine:3.2.1")

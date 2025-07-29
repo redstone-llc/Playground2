@@ -1,27 +1,40 @@
 package llc.redstone.playground.feature.housingMenu
 
-import llc.redstone.playground.menu.Menu
-import llc.redstone.playground.menu.menuItem
+import llc.redstone.playground.menu.PItem
+import llc.redstone.playground.menu.items.CloseItem
+import llc.redstone.playground.utils.colorize
+import llc.redstone.playground.menu.invui.NormalMenu
+import llc.redstone.playground.utils.err
 import net.minestom.server.entity.Player
-import net.minestom.server.inventory.InventoryType
-import net.minestom.server.inventory.click.ClickType
 import net.minestom.server.item.Material
+import xyz.xenondevs.invui.gui.Gui
 
-class PlaygroundMenu: Menu(
-    "Playground Menu",
-    InventoryType.CHEST_6_ROW
+class PlaygroundMenu: NormalMenu(
+    colorize("Playground Menu"),
 ){
-    override fun setupItems(player: Player) {
-        for (i in 0 until type.size) { //Template for adding items
-            addItem(i, menuItem(Material.AIR) {
-                player.sendMessage("You clicked on item $i")
-            })
-        }
-
-        addItem(22, menuItem(Material.ACTIVATOR_RAIL) {
-            SystemsMenu().open(player)
-        }.name("<green>Systems Menu")
-            .description("Contains all the systems for your Sandbox")
-            .action(ClickType.LEFT_CLICK, "to edit"))
+    override fun initTopGUI(player: Player): Gui {
+        return Gui.normal()
+            .setStructure(
+                "# # # # # # # # #",
+                "# # # # s # # # #",
+                "# # # # # # # # #",
+                "# # # # # # # # #",
+                "# # # # b # # # #",
+            )
+            .addIngredient('b', CloseItem())
+            .addIngredient(
+                's', PItem(Material.ACTIVATOR_RAIL)
+                    .name("<green>Systems")
+                    .leftClick("open") { _, _ ->
+                        try {
+                            SystemsMenu().open(player)
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                            player.err("Failed to open Systems Menu: ${e.message}")
+                        }
+                        null
+                    }.buildItem()
+            )
+            .build()
     }
 }

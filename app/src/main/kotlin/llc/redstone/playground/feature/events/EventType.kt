@@ -1,6 +1,7 @@
 package llc.redstone.playground.feature.events
 
 import llc.redstone.playground.menu.MenuItem
+import llc.redstone.playground.menu.PItem
 import llc.redstone.playground.menu.menuItem
 import net.minestom.server.event.player.PlayerBlockBreakEvent
 import net.minestom.server.event.player.PlayerEntityInteractEvent
@@ -10,7 +11,7 @@ import net.minestom.server.item.Material
 
 enum class EventType(
     val clazz: Class<out PlayerEvent>,
-    val menuItem: MenuItem,
+    val menuItem: PItem,
 ) {
     BLOCK_BREAK(PlayerBlockBreakEvent::class.java,
         createMenuItem(
@@ -30,12 +31,9 @@ enum class EventType(
     ;
 }
 
-fun createMenuItem(material: Material, name: String, description: String = "<red>No description set!"): MenuItem {
-    return menuItem(
+fun createMenuItem(material: Material, name: String, description: String = "<red>No description set!"): PItem {
+    return PItem(
         material
-    ) {
-
-    }.name("<green>${name}")
+    ).name("<green>${name}")
      .description("Execute actions when $description")
-     .action(ClickType.LEFT_CLICK, "to edit")
 }

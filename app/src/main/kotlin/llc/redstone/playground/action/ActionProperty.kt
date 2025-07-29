@@ -1,5 +1,6 @@
 package llc.redstone.playground.action
 
+import com.catppuccin.Palette
 import net.minestom.server.entity.Player
 import net.minestom.server.event.inventory.InventoryPreClickEvent
 import net.minestom.server.inventory.click.ClickType
@@ -8,6 +9,7 @@ import llc.redstone.playground.menu.Menu
 import llc.redstone.playground.menu.MenuItem
 import llc.redstone.playground.menu.menuItem
 import llc.redstone.playground.database.Sandbox
+import llc.redstone.playground.utils.color
 import llc.redstone.playground.utils.success
 import java.lang.reflect.Field
 import kotlin.reflect.KClass
@@ -17,7 +19,7 @@ abstract class ActionProperty<V>(
 ) {
     open fun displayValue(value: V?): String? {
         if (value == null) {
-            return "&cNone"
+            return "null".color(Palette.MACCHIATO.peach().hex())
         }
         return value.toString()
     }
@@ -109,7 +111,7 @@ fun Field.description(): String {
 }
 
 @Target(AnnotationTarget.FIELD)
-annotation class DisplayName(val value: String)
+annotation class DisplayName(val value: String, val emoji: String = "", val color: String = "<yellow>")
 
 @Target(AnnotationTarget.FIELD)
 annotation class Description(val value: String)

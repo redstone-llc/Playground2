@@ -3,55 +3,97 @@ package feature.actionMenu
 import llc.redstone.playground.action.Action
 import llc.redstone.playground.menu.*
 import net.minestom.server.entity.Player
-import net.minestom.server.inventory.InventoryType
-import net.minestom.server.inventory.click.Click.Left
-import net.minestom.server.inventory.click.Click.Right
-import llc.redstone.playground.utils.PaginationList
-import net.minestom.server.item.Material
 import llc.redstone.playground.feature.actionMenu.ActionEditMenu
 import llc.redstone.playground.feature.actionMenu.AddActionMenu
+import llc.redstone.playground.managers.getSandbox
+import llc.redstone.playground.menu.invui.AbstractMenu
+import llc.redstone.playground.menu.invui.AnvilMenu
+import llc.redstone.playground.menu.items.BackItem
+import llc.redstone.playground.menu.items.ForwardItem
+import llc.redstone.playground.menu.items.ReverseItem
+import llc.redstone.playground.utils.component
+import llc.redstone.playground.utils.err
+import llc.redstone.playground.utils.item
+import net.minestom.server.inventory.click.Click
+import org.everbuild.asorda.resources.data.font.MenuCharacters
+import org.everbuild.asorda.resources.data.items.GlobalIcons
+import xyz.xenondevs.invui.gui.Gui
+import xyz.xenondevs.invui.gui.PagedGui
+import xyz.xenondevs.invui.gui.structure.Markers
+import xyz.xenondevs.invui.item.Item
 
 class ActionsMenu(
     val actions: MutableList<Action>,
-    private val backMenu: Menu
-): PaginationMenu(
-    "Actions",
-    InventoryType.CHEST_6_ROW
-), Backable {
-    override fun setupItems(player: Player) {
-        super.setupItems(player)
-
-        super.addItem(50, menuItem(Material.PAPER) {
-            AddActionMenu(this).open(player)
-        }.name("<green>Add Action"))
+    private val backMenu: AbstractMenu
+) : AnvilMenu(
+    title = MenuCharacters.actionsSearchMenu.component(-60)
+) {
+    override fun initAnvilGUI(player: Player): Gui? {
+        return Gui.normal()
+            .setStructure(
+                "# # #"
+            )
+            .build()
     }
 
-    override fun paginationList(player: Player): PaginationList<MenuItem> {
-        val menuItems = ArrayList<MenuItem>()
-        for ((index, action) in actions.withIndex()) {
-            val item = action.createDisplayItem()
-            item.action = { event ->
-                if (event.click is Left && action.properties.isNotEmpty()) ActionEditMenu(
-                    action,
-                    this
-                ).open(player)
-                if (event.click is Right) {
-                    actions.removeAt(index)
-                    open(player)
-                }
-            }
-
-            menuItems.add(item)
+    override fun initPlayerGUI(player: Player): Gui? {
+        val sandbox = player.getSandbox() ?: run {
+            player.err("You are not in a sandbox!")
+            return null;
         }
 
-        return PaginationList(menuItems, slots.size)
+        return PagedGui.items()
+            .setStructure(
+                "# x x x x x x x #",
+                "# x x x x x x x #",
+                "# x x x x x x x #",
+                "< # # # b a # # >"
+            )
+            .addIngredient('x', Markers.CONTENT_LIST_SLOT_HORIZONTAL) // where paged items should be put
+            .addIngredient('<', ReverseItem())
+            .addIngredient('>', ForwardItem())
+            .addIngredient('b', BackItem(backMenu))
+            .addIngredient(
+                'a', PItem(GlobalIcons.empty.item())
+                    .name("<green>Add Action</green>")
+                    .leftClick("add") { _, _ ->
+                        AddActionMenu(this).open(player)
+
+                        null
+                    }.buildItem()
+            )
+            .setContent(content(player))
+            .build()
     }
 
-    override fun back(player: Player) {
-        backMenu.open(player)
+    private fun content(player: Player): List<Item> {
+        return actions.map { action ->
+            action.createDisplayItem()
+                .leftClick("edit") { _, _ ->
+                    if (action.properties.isNotEmpty()) ActionEditMenu(
+                        action,
+                        this
+                    ).open(player)
+
+                    null
+                }
+                .click(Click.Middle::class, "<success>⮝ clone</success>") { _, _ ->
+                    val newAction = action.clone()
+                    actions.add(newAction)
+                    open(player)
+
+                    null
+                }
+                .rightClick("remove") { _, _ ->
+                    actions.remove(action)
+                    open(player)
+
+                    null
+                }.buildItem()
+        }
     }
 
-    override fun backName(player: Player): String {
-        return backMenu.title
+    override fun onRename(player: Player, name: String) {
+
     }
 }

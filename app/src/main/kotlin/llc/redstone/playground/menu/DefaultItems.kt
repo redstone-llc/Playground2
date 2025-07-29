@@ -8,7 +8,6 @@ import net.minestom.server.item.component.TooltipDisplay
 import org.everbuild.asorda.resources.data.items.GlobalIcons
 
 object DefaultItems {
-    val CLEAR = GlobalIcons.iconDeleteGray.item().withCustomName(colorize(""))
-    val INV_PART = GlobalIcons.empty.item().withCustomName(colorize(""))
+    val EMPTY = GlobalIcons.empty.item().withCustomName(colorize(""))
         .with(DataComponents.TOOLTIP_DISPLAY, TooltipDisplay(true, setOf()))
 }

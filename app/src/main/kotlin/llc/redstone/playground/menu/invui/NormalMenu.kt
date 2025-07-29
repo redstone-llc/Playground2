@@ -1,8 +1,7 @@
-package llc.redstone.server.menu
+package llc.redstone.playground.menu.invui
 
 import net.kyori.adventure.text.Component
 import net.minestom.server.entity.Player
-import llc.redstone.playground.menu.invui.AbstractMenu
 import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.window.Window
 
@@ -17,18 +16,29 @@ abstract class NormalMenu(
     override fun open(player: Player) {
         topGui = initTopGUI(player)
         bottomGui = initBottomGUI(player)
-        val window = Window.split()
-            .setTitle(title)
-            .setViewer(player)
-            .addCloseHandler {
-                onClose(player)
-            }
-            .setUpperGui(topGui!!)
-            .addOpenHandler {
-                onOpen(player)
-            }
-        if (bottomGui != null) {
-            window.setLowerGui(topGui!!)
+        val window = if (bottomGui == null) {
+             Window.single()
+                .setTitle(title)
+                .setViewer(player)
+                .addCloseHandler {
+                    onClose(player)
+                }
+                .setGui(topGui!!)
+                .addOpenHandler {
+                    onOpen(player)
+                }
+        } else {
+            Window.split()
+                .setTitle(title)
+                .setViewer(player)
+                .addCloseHandler {
+                    onClose(player)
+                }
+                .setUpperGui(topGui!!)
+                .setLowerGui(bottomGui!!)
+                .addOpenHandler {
+                    onOpen(player)
+                }
         }
         this.window = window.build()
         this.window.open()

@@ -12,9 +12,10 @@ import llc.redstone.playground.action.properties.AnyPropertyAnnotation
 import llc.redstone.playground.action.properties.anyValue
 import llc.redstone.playground.feature.evalex.PGExpression
 import llc.redstone.playground.database.Sandbox
+import org.everbuild.celestia.orion.core.packs.withEmojis
 
 class Return(
-    @DisplayName("Return Value")
+    @DisplayName("Return Value", ":return:", "<mach_mauve>")
     @AnyPropertyAnnotation
     val returnValue: String? = null
 ) : Action(

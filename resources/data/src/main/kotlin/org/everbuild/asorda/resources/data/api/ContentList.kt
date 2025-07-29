@@ -14,7 +14,6 @@ import org.everbuild.asorda.resources.data.api.multipart.MultipartItemResource
 import org.everbuild.asorda.resources.data.api.spritesheet.SpriteSheet
 import org.everbuild.asorda.resources.data.api.translate.ResourcePackTranslation
 import org.everbuild.asorda.resources.data.api.translate.TranslatedResource
-import org.everbuild.asorda.resources.data.items.SystemIcons
 import team.unnamed.creative.ResourcePack
 import team.unnamed.creative.font.FontProvider
 
@@ -94,27 +93,6 @@ abstract class ContentList(private var namespace: String = "") : BuildableResour
             items[locale] = block(locale, translation)
         }
         return TranslatedResource(items)
-    }
-
-    @InElementDsl
-    fun createMultipartItem(descriptor: String, spriteSheet: SpriteSheet): MultipartItemResource {
-        val items = mutableListOf<ItemResource>()
-        var width = 0
-        var height = 0
-        spriteSheet.forEach { x, y, value ->
-            if (x > width) width = x
-            if (y > height) height = y
-            items.add(createItem("${descriptor}_${x}_${y}") {
-                model(createModel {
-                    parent(SystemIcons.buttonModel)
-                    textures(
-                        "layer0" to value
-                    )
-                })
-            })
-        }
-
-        return MultipartItemResource(items, width + 1, height + 1)
     }
 
     @InElementDsl

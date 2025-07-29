@@ -11,17 +11,15 @@ import net.minestom.server.inventory.click.Click
 import org.everbuild.asorda.resources.data.items.GlobalIcons
 import xyz.xenondevs.invui.item.impl.SimpleItem
 
-class BackItem(
-    val backMenu: AbstractMenu,
-    val menuName: String = serialize(backMenu.title), // Would be smarter to always set this
-    val item: ItemStack = PItem(GlobalIcons.empty.item()).name("<red>Go Back").description("To $menuName").build()
+class CloseItem(
+    val item: ItemStack = PItem(GlobalIcons.empty.item()).name("<red>Close").description("To close the menu").build()
 ) : SimpleItem(item) {
     override fun handleClick(
         clickType: Click,
         player: Player,
         event: InventoryPreClickEvent
     ) {
-        backMenu.open(player)
+        player.closeInventory()
     }
 
 }

@@ -14,7 +14,10 @@ import net.minestom.server.item.ItemStack
 import net.minestom.server.item.Material
 import llc.redstone.playground.feature.evalex.PGExpression
 import llc.redstone.playground.database.Sandbox
+import llc.redstone.playground.menu.PItem
+import llc.redstone.playground.utils.colorize
 import llc.redstone.playground.utils.minecraftServer
+import org.everbuild.celestia.orion.core.packs.withEmojis
 import org.everbuild.celestia.orion.platform.minestom.api.Mc
 import java.lang.reflect.Field
 
@@ -62,24 +65,21 @@ abstract class Action(
         }
     )
 
-    fun createDisplayItem(): MenuItem {
-        val builder = MenuItem(ItemStack.of(icon))
+    fun createDisplayItem(): PItem {
+        val builder = PItem(ItemStack.of(icon))
         builder.name("<yellow>$name")
         builder.description(comment)
         if (properties.isNotEmpty()) {
-            builder.info("<yellow>Settings", "")
+            builder.data("<yellow>Settings", "", null)
 
             for (field in this.javaClass.declaredFields) {
                 val displayName = field.getAnnotation(DisplayName::class.java)
                 if (displayName != null) {
-                    builder.info(displayName.value, field.displayValue(this))
+                    val emoji = displayName.emoji.ifBlank { displayName.value }
+                    builder.data(emoji.withEmojis(), field.displayValue(this), colorize(displayName.color).color())
                 }
             }
-
-            builder.action(ClickType.LEFT_CLICK, "to edit")
         }
-        builder.action(ClickType.RIGHT_CLICK, "to remove")
-
         return builder
     }
 
@@ -99,5 +99,19 @@ abstract class Action(
 
     open fun requiresEvent(): Boolean {
         return false
+    }
+
+    fun clone(): Action {
+        val cloned = this::class.java.getDeclaredConstructor().newInstance()
+        for (field in this.javaClass.declaredFields) {
+            field.isAccessible = true
+            try {
+                field.set(cloned, field.get(this))
+            } catch (e: IllegalAccessException) {
+                e.printStackTrace()
+            }
+        }
+        cloned.comment = this.comment
+        return cloned
     }
 }

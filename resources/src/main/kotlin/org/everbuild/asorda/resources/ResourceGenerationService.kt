@@ -9,7 +9,6 @@ import java.util.zip.ZipOutputStream
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.everbuild.asorda.resources.data.ResourceGenerator
-import org.everbuild.asorda.resources.data.addWseeModels
 import org.zeroturnaround.zip.ZipUtil
 import team.unnamed.creative.serialize.minecraft.MinecraftResourcePackWriter
 
@@ -29,7 +28,6 @@ class ResourceGenerationService : Thread() {
                     resourcesDir.mkdirs()
                     val (pack, _) = spinner(ResourceGenerator::regenerate)
                     MinecraftResourcePackWriter.minecraft().writeToDirectory(resourcesDir, pack)
-                    addWseeModels(resourcesDir)
                     zipDirectory(resourcesDir, resources)
 
                     val sha1 = ChecksumGenerator.sha1(resources)

@@ -14,9 +14,9 @@ abstract class AnvilMenu(
     lateinit var lowerGUI: Gui
 
     override fun open(player: Player) {
-        lowerGUI = initPlayerGUI(player)
+        lowerGUI = initPlayerGUI(player)?: return
         anvilWindow = AnvilWindow.split().setTitle(title)
-            .setUpperGui(initAnvilGUI(player))
+            .setUpperGui(initAnvilGUI(player)?: return)
             .setLowerGui(lowerGUI)
             .addCloseHandler {
                 onClose(player)
@@ -33,8 +33,8 @@ abstract class AnvilMenu(
         anvilWindow.open()
     }
 
-    abstract fun initAnvilGUI(player: Player): Gui
-    abstract fun initPlayerGUI(player: Player): Gui
+    abstract fun initAnvilGUI(player: Player): Gui?
+    abstract fun initPlayerGUI(player: Player): Gui?
     abstract fun onRename(player: Player, name: String)
 
     override fun onClose(player: Player) {

@@ -1,23 +1,26 @@
 package llc.redstone.playground.menu.items
 
+import llc.redstone.playground.menu.PItem
 import llc.redstone.playground.utils.colorize
 import llc.redstone.playground.utils.item
+import net.minestom.server.item.ItemStack
 import org.everbuild.asorda.resources.data.items.GlobalIcons
 import xyz.xenondevs.invui.gui.PagedGui
 import xyz.xenondevs.invui.item.ItemProvider
+import xyz.xenondevs.invui.item.ItemWrapper
 import xyz.xenondevs.invui.item.builder.ItemBuilder
 import xyz.xenondevs.invui.item.impl.controlitem.PageItem
 
-class ForwardItem : PageItem(true) {
+class ForwardItem(
+    val item: PItem = PItem(GlobalIcons.empty.item())
+) : PageItem(true) {
     override fun getItemProvider(gui: PagedGui<*>): ItemProvider? {
-        val item = GlobalIcons.iconArrowLeftRightGreen.item()
-        item.withCustomName(colorize("Next page"))
-            .withLore(colorize(
+        item.name("<green>Next page")
+            .description(
                 if (gui.currentPage < gui.pageAmount - 1)
                     "Go to page ${gui.currentPage + 1}/${gui.pageAmount}"
-                else "You can't go further forward")
+                else "You can't go further forward"
             )
-        return ItemBuilder(item)
+        return ItemWrapper(item.build())
     }
-
 }

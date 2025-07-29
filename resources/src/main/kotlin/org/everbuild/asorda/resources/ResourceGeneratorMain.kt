@@ -34,7 +34,6 @@ import kotlin.time.Duration.Companion.milliseconds
 import org.everbuild.asorda.resources.ResourceGenerationService.Companion.resources
 import org.everbuild.asorda.resources.ResourceGenerationService.Companion.resourcesDir
 import org.everbuild.asorda.resources.ResourceGenerationService.Companion.zipDirectory
-import org.everbuild.asorda.resources.data.addWseeModels
 
 val service = ResourceGenerationService()
 
@@ -114,7 +113,6 @@ fun main(args: Array<String>) {
                 .build()
                 .writeToDirectory(resourcesDir, pack)
             MinecraftResourcePackWriter.minecraft().writeToDirectory(resourcesDir, pack)
-            addWseeModels(resourcesDir)
             zipDirectory(resourcesDir, resources)
             ResourceGenerationService.metadata.writeText(Json.encodeToString(meta))
 

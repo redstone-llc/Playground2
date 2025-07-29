@@ -14,6 +14,8 @@ dependencies {
     implementation("io.ktor:ktor-client-core-jvm:3.2.1")
     implementation(libs.bundles.ktor)
     implementation("io.ktor:ktor-client-apache:3.2.1")
+    implementation("com.catppuccin:catppuccin-palette:${libs.versions.catppuccin.get()}")
+
 
     implementation(libs.evalEx)
 

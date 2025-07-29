@@ -4,12 +4,15 @@ import llc.redstone.playground.action.Action
 import llc.redstone.playground.managers.getSandbox
 import llc.redstone.playground.menu.Backable
 import llc.redstone.playground.menu.Menu
+import llc.redstone.playground.menu.invui.AbstractMenu
+import llc.redstone.playground.utils.colorize
+import llc.redstone.playground.utils.serialize
 import net.minestom.server.entity.Player
 import net.minestom.server.inventory.InventoryType
 
 class ActionEditMenu(
     val action: Action,
-    val menu: Menu
+    val menu: AbstractMenu
 ) : Menu(
     "Action Edit",
     if (action.properties.size > 9) InventoryType.CHEST_5_ROW else InventoryType.CHEST_4_ROW
@@ -29,6 +32,6 @@ class ActionEditMenu(
     }
 
     override fun backName(player: Player): String {
-        return menu.title
+        return serialize(menu.title)
     }
 }

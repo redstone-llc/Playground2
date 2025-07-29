@@ -9,16 +9,17 @@ import net.kyori.adventure.text.format.TextColor
 import net.minestom.server.entity.Player
 import net.minestom.server.event.inventory.InventoryPreClickEvent
 import net.minestom.server.inventory.click.Click
-import net.minestom.server.inventory.click.Click.Left
+import net.minestom.server.inventory.click.Click.*
 import net.minestom.server.item.ItemStack
 import net.minestom.server.item.Material
 import xyz.xenondevs.invui.item.Item
 import xyz.xenondevs.invui.item.ItemProvider
 import xyz.xenondevs.invui.item.builder.ItemBuilder
 import xyz.xenondevs.invui.item.impl.AbstractItem
+import kotlin.reflect.KClass
 
-class PItem(material: Material = Material.AIR, var builder: ItemBuilder = ItemBuilder(material)) {
-    constructor(builder: ItemBuilder) : this(Material.AIR, builder)
+class PItem(material: Material = Material.AIR, var builder: ItemStack = ItemStack.of(material)) {
+    constructor(builder: ItemStack) : this(Material.AIR, builder)
 
     // First line of lore &8 formatting before it
     var info: String? = null
@@ -40,13 +41,10 @@ class PItem(material: Material = Material.AIR, var builder: ItemBuilder = ItemBu
 
     // Blank line
     // Click actions
-    var leftClick: Pair<String?, ((Item, Click) -> PItem?)>? = null
-        private set
-    var rightClick: Pair<String?, ((Item, Click) -> PItem?)>? = null
-        private set
+    private var click: MutableMap<KClass<out Click>, Pair<String?, ((Item, Click) -> PItem?)>> = mutableMapOf()
 
     fun name(name: String): PItem {
-        builder.setDisplayName(colorize(name))
+        builder = builder.withCustomName(colorize(name))
         return this
     }
 
@@ -66,22 +64,38 @@ class PItem(material: Material = Material.AIR, var builder: ItemBuilder = ItemBu
     }
 
     fun leftClick(display: String, action: (Item, Click) -> PItem?): PItem {
-        this.leftClick = Pair(display, action)
+        click[Left::class] = Pair(display, action)
         return this
     }
 
     fun leftClick(action: (Item, Click) -> PItem?): PItem {
-        this.leftClick = Pair(null, action)
+        click[Left::class] = Pair(null, action)
+        return this
+    }
+
+    fun leftClick(action: (Click) -> Unit): PItem {
+        click[Left::class] = Pair(null) { item, click ->
+            action(click)
+            null // Return null to indicate no new item is created
+        }
         return this
     }
 
     fun rightClick(display: String, action: (Item, Click) -> PItem?): PItem {
-        this.rightClick = Pair(display, action)
+        click[Right::class] = Pair(display, action)
         return this
     }
 
     fun rightClick(action: (Item, Click) -> PItem?): PItem {
-        this.rightClick = Pair(null, action)
+        click[Right::class] = Pair(null, action)
+        return this
+    }
+
+    fun rightClick(action: (Click) -> Unit): PItem {
+        click[Right::class] = Pair(null) { item, click ->
+            action(click)
+            null // Return null to indicate no new item is created
+        }
         return this
     }
 
@@ -94,25 +108,39 @@ class PItem(material: Material = Material.AIR, var builder: ItemBuilder = ItemBu
             val lineLength = emoji.length + pair.first.length + 2
             longestLine = maxOf(longestLine, lineLength)
         }
-        if (leftClick != null) {
-            longestLine = maxOf(longestLine, leftClick!!.first?.length ?: 0)
+        click.forEach { (_, pair) ->
+            val lineLength = pair.first?.length ?: 0
+            longestLine = maxOf(longestLine, lineLength)
         }
-        if (rightClick != null) {
-            longestLine = maxOf(longestLine, rightClick!!.first?.length ?: 0)
-        }
-
         if (longestLine < 20) {
             longestLine = 20 // Minimum length for aesthetic reasons
         }
         return longestLine + 2 // Just so it doesnt look weird
     }
 
-    fun build(): ItemBuilder {
+    fun <T : Click> click(
+        type: KClass<T>,
+        display: String,
+        action: (Item, Click) -> PItem?
+    ): PItem {
+        click[type] = Pair(display, action)
+        return this
+    }
+
+    fun <T : Click> click(
+        type: KClass<T>,
+        action: (Item, Click) -> PItem?
+    ): PItem {
+        click[type] = Pair(null, action)
+        return this
+    }
+
+    fun build(): ItemStack {
         val lore = mutableListOf<Component>()
         if (info != null) {
             lore.add(colorize("<dark_gray>$info</dark_gray>"))
         }
-        if (description != null) {
+        if (description != null && description!!.isNotEmpty()) {
             lore.add(Component.empty())
             lore.addAll(wrapLoreLines(colorize("<gray>${description!!}</gray>"), minOf(longestLine(), 40)))
         }
@@ -123,16 +151,32 @@ class PItem(material: Material = Material.AIR, var builder: ItemBuilder = ItemBu
                 lore.add(colorize("<${color}><bold> $emoji </bold>${pair.first}</${color}>"))
             }
         }
-        if (leftClick?.first != null || rightClick?.first != null) {
+        if (click.isNotEmpty()) {
             lore.add(Component.empty())
-            if (leftClick?.first != null) {
-                lore.add(colorize("<bold><primary_click>◀ ${smallCapsFont(leftClick!!.first!!)}</primary_click></bold>"))
-            }
-            if (rightClick?.first != null) {
-                lore.add(colorize("<bold><secondary_click>▶ ${smallCapsFont(rightClick!!.first!!)}</secondary_click></bold>"))
+            for ((clickType, pair) in click) {
+                val display = pair.first
+                if (display != null) {
+                    lore.add(
+                        colorize(
+                            "<bold>${
+                                when (clickType) {
+                                    Left::class -> "<primary>◀ "
+                                    Right::class -> "<secondary>▶ "
+                                    else -> ""
+                                }
+                            }$display${
+                                when (clickType) {
+                                    Left::class -> "</primary>"
+                                    Right::class -> "</secondary>"
+                                    else -> ""
+                                }
+                            }</bold>"
+                        )
+                    )
+                }
             }
         }
-        builder.setLore(lore)
+        builder = builder.withLore(lore)
         return builder
     }
 
@@ -141,14 +185,13 @@ class PItem(material: Material = Material.AIR, var builder: ItemBuilder = ItemBu
         this.info = rItem.info
         this.description = rItem.description
         this.data = rItem.data
-        this.leftClick = rItem.leftClick
-        this.rightClick = rItem.rightClick
+        this.click = rItem.click.toMutableMap()
         return this
     }
 
     //Haha funny
     fun buildItemStack(): ItemStack {
-        return build().get()
+        return build()
     }
 
     // If we aint building, are we even doing it right?
@@ -156,25 +199,29 @@ class PItem(material: Material = Material.AIR, var builder: ItemBuilder = ItemBu
         return InvItem(this)
     }
 
+    fun toBuilder(): ItemBuilder {
+        return ItemBuilder(build())
+    }
+
+    fun clone(): PItem {
+        return PItem().from(this)
+    }
+
     class InvItem(
         private val item: PItem
-    ): AbstractItem() {
+    ) : AbstractItem() {
         override fun getItemProvider(): ItemProvider? {
-            return item.build()
+            return item.toBuilder()
         }
+
         override fun handleClick(
             click: Click,
             player: Player,
             event: InventoryPreClickEvent
         ) {
-            val newItem: PItem? = if (click is Left && item.leftClick != null) {
-                item.leftClick!!.second.invoke(this, click)
-            } else if (click is Click.Right && item.rightClick != null) {
-                item.rightClick!!.second.invoke(this, click)
-            } else {
-                null
-            }
-            if (newItem != null) {
+            val action = item.click[click.javaClass.kotlin]
+            if (action == null) return
+            action.second.invoke(this, click)?.let { newItem ->
                 update(item, newItem)
             }
         }

@@ -4,6 +4,6 @@ import org.everbuild.asorda.resources.data.api.resource
 import team.unnamed.creative.ResourcePack
 
 suspend fun addMetadata(pack: ResourcePack) {
-    pack.packMeta(63, "asorda.net - Resources")
+    pack.packMeta(63, "Playground Pack")
     pack.icon(resource("pack.png"))
 }

@@ -1,20 +1,16 @@
 package llc.redstone.playground.commands
 
-import llc.redstone.playground.managers.loadInstance
+import llc.redstone.playground.feature.housingMenu.PlaygroundMenu
 import llc.redstone.playground.managers.*
-import llc.redstone.playground.menu.invui.TestMenu
 import llc.redstone.playground.utils.err
 import llc.redstone.playground.utils.setInstanceSafe
 import llc.redstone.playground.utils.success
-import net.minestom.server.command.CommandSender
 import net.minestom.server.coordinate.Pos
-import net.minestom.server.dialog.Dialog
-import net.minestom.server.dialog.DialogMetadata
 import net.minestom.server.entity.GameMode
 import net.minestom.server.entity.Player
-import net.minestom.server.network.packet.server.common.ShowDialogPacket
 import org.everbuild.celestia.orion.platform.minestom.api.command.Arg
 import org.everbuild.celestia.orion.platform.minestom.api.command.Kommand
+
 
 object PlaygroundCommand: Kommand("playground", "pg") {
     init {
@@ -49,8 +45,13 @@ object PlaygroundCommand: Kommand("playground", "pg") {
             }
         }
 
-        executes(Arg.literal("test")) {
-            test(player)
+        executes(Arg.literal("menu")) {
+            try {
+                menu(player)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                player.err("An error occurred while opening the playground menu: ${e.message}")
+            }
         }
 
     }
@@ -60,14 +61,15 @@ object PlaygroundCommand: Kommand("playground", "pg") {
         sender.success("/playground help - Show this help message.")
         sender.success("/playground create <name> - Create a new sandbox instance with the given name.")
         sender.success("/playground goto <uuid> - Teleport to a sandbox instance by its UUID.")
-        sender.success("/playground test - Open the test menu.")
+        sender.success("/playground menu - Open the playground menu.")
     }
 
-    fun test(sender: Player) {
-        sender.success("Opening the test menu...")
-        ShowDialogPacket(Dialog.Notice(
-            DialogMetadata(
-
+    fun menu(sender: Player) {
+        if (sender.getSandbox() == null) {
+            sender.err("You are not in a sandbox!")
+            return
+        }
+        PlaygroundMenu().open(sender)
     }
 
     fun goto(sender: Player, uuid: String) {

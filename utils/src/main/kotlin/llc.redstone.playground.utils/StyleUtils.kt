@@ -1,15 +1,19 @@
 package llc.redstone.playground.utils
 
+import com.catppuccin.Palette
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.TextComponent
+import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.DARK_RED
 import net.kyori.adventure.text.format.Style
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
+import org.everbuild.asorda.resources.data.font.GlyphCharacters
+import org.everbuild.celestia.orion.core.packs.OrionPacks
 import java.util.*
 import java.util.Map.*
 import kotlin.collections.ArrayList
@@ -29,18 +33,29 @@ const val VARIABLE_BRIGHTNESS_FACTOR = 0.8
 // Format minimessage string using Adventure API
 fun colorize(message: String): Component {
     assert(primaryColor != null && secondaryColor != null && successColor != null && warningColor != null && errorColor != null) { "One or more colors are not initialized" }
+
+    val mach = Palette.MACCHIATO.toList().map { pair ->
+        Placeholder.styling("mach_${pair.key()}", TextColor.fromHexString("#${pair.value().hex()}")!!)
+    }
+
     return MiniMessage.miniMessage().deserialize(
         "<reset><!i>$message",
         Placeholder.styling("primary", primaryColor!!),
         Placeholder.styling("secondary", secondaryColor!!),
         Placeholder.styling("success", successColor!!),
         Placeholder.styling("warning", warningColor!!),
-        Placeholder.styling("error", errorColor!!)
+        Placeholder.styling("error", errorColor!!),
+
+        *mach.toTypedArray()
     )
 }
 
 fun removeColor(message: String): String {
     return MiniMessage.miniMessage().stripTags(message)
+}
+
+fun serialize(component: Component): String {
+    return MiniMessage.miniMessage().serialize(component)
 }
 
 fun String.color(color: TextColor): String {

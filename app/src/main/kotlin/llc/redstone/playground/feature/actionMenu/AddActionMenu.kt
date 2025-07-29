@@ -6,6 +6,7 @@ import feature.actionMenu.ActionsMenu
 import llc.redstone.playground.menu.Backable
 import llc.redstone.playground.menu.MenuItem
 import llc.redstone.playground.menu.PaginationMenu
+import llc.redstone.playground.utils.serialize
 import net.minestom.server.entity.Player
 
 class AddActionMenu(
@@ -31,6 +32,6 @@ class AddActionMenu(
     }
 
     override fun backName(player: Player): String {
-        return backMenu.title
+        return serialize(backMenu.title)
     }
 }
