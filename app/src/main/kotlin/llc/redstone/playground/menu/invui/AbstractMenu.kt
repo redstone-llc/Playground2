@@ -4,7 +4,8 @@ import net.kyori.adventure.text.Component
 import net.minestom.server.entity.Player
 
 abstract class AbstractMenu(
-    val title: Component
+    val title: Component,
+    val displayName: Component,
 ) {
     abstract fun open(player: Player)
     open fun onClose(player: Player) {

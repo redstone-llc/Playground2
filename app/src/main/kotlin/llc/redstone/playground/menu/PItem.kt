@@ -81,6 +81,14 @@ class PItem(material: Material = Material.AIR, var builder: ItemStack = ItemStac
         return this
     }
 
+    fun leftClick(display: String, action: (Click) -> Unit): PItem {
+        click[Left::class] = Pair(display) { item, click ->
+            action(click)
+            null // Return null to indicate no new item is created
+        }
+        return this
+    }
+
     fun rightClick(display: String, action: (Item, Click) -> PItem?): PItem {
         click[Right::class] = Pair(display, action)
         return this
@@ -93,6 +101,14 @@ class PItem(material: Material = Material.AIR, var builder: ItemStack = ItemStac
 
     fun rightClick(action: (Click) -> Unit): PItem {
         click[Right::class] = Pair(null) { item, click ->
+            action(click)
+            null // Return null to indicate no new item is created
+        }
+        return this
+    }
+
+    fun rightClick(display: String, action: (Click) -> Unit): PItem {
+        click[Right::class] = Pair(display) { item, click ->
             action(click)
             null // Return null to indicate no new item is created
         }

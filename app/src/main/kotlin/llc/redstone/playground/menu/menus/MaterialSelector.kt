@@ -7,10 +7,11 @@ import net.minestom.server.item.Material
 import llc.redstone.playground.menu.Menu
 import llc.redstone.playground.menu.MenuItem
 import llc.redstone.playground.menu.PaginationMenu
+import llc.redstone.playground.menu.invui.AbstractMenu
 import llc.redstone.playground.menu.menuItem
 import llc.redstone.playground.utils.PaginationList
 
-class MaterialSelector(backMenu: Menu, val invoke: (Material) -> Unit): PaginationMenu(
+class MaterialSelector(backMenu: AbstractMenu, val invoke: (Material) -> Unit): PaginationMenu(
     "Material Selector",
     InventoryType.CHEST_6_ROW
 ) {

@@ -8,7 +8,8 @@ import xyz.xenondevs.invui.window.AnvilWindow
 
 abstract class AnvilMenu(
     title: Component,
-): AbstractMenu(title) {
+    displayName: Component = title
+): AbstractMenu(title, displayName) {
     lateinit var anvilWindow: AnvilWindow
     // Player gui
     lateinit var lowerGUI: Gui

@@ -21,6 +21,8 @@ object OrionPacks {
         .join()
 
     private val spaceCache = hashMapOf<Int, Component>()
+    private val vertCache = hashMapOf<Int, Component>()
+
 
     val data =
         Json.decodeFromString<ResourcePackMetadata>(OrionPacks::class.java.getResource("/resources.json")!!.readText())
@@ -53,6 +55,14 @@ object OrionPacks {
 
     fun getSpaceComponent(width: Int): Component {
         return spaceCache.getOrPut(width) { SpaceLayerToken.segmentWidth(width.absoluteValue, width.sign).component() }
+    }
+
+    fun getVerticalComponent(height: Int): Component {
+        return vertCache.getOrPut(height) { getCharacterCodepoint("vertical_$height").component() }
+    }
+
+    fun getStringWidth(str: String): Int {
+        return str.sumOf { getCharacterWidth(it) } + (str.length - 1) // +1 for the space between characters
     }
 
     fun getComponentWidth(label: Component): Int = 0

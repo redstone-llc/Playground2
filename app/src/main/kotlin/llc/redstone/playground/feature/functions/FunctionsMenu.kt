@@ -1,6 +1,5 @@
 package llc.redstone.playground.feature.functions
 
-import feature.actionMenu.ActionsMenu
 import net.minestom.server.entity.Player
 import net.minestom.server.item.Material
 import llc.redstone.playground.action.actions.Return
@@ -12,10 +11,13 @@ import llc.redstone.playground.menu.invui.AnvilMenu
 import llc.redstone.playground.menu.items.BackItem
 import llc.redstone.playground.menu.items.ForwardItem
 import llc.redstone.playground.menu.items.ReverseItem
+import llc.redstone.playground.utils.colorize
 import llc.redstone.playground.utils.component
 import llc.redstone.playground.utils.err
 import llc.redstone.playground.utils.isValidIdentifier
+import llc.redstone.playground.utils.noError
 import llc.redstone.playground.utils.openChat
+import llc.redstone.playground.utils.openDialogInput
 import org.everbuild.asorda.resources.data.font.MenuCharacters
 import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.gui.PagedGui
@@ -23,7 +25,8 @@ import xyz.xenondevs.invui.gui.structure.Markers
 import xyz.xenondevs.invui.item.Item
 
 class FunctionsMenu : AnvilMenu(
-    title = MenuCharacters.functionSearchMenu.component(-60)
+    title = MenuCharacters.functionSearchMenu.component(-60),
+    displayName = colorize("<green>Functions Menu")
 ) {
     var search = ""
     override fun initAnvilGUI(player: Player): Gui {
@@ -57,15 +60,27 @@ class FunctionsMenu : AnvilMenu(
                     .name("<green>Add Function")
                     .description("")
                     .leftClick {
-                        player.openChat("", "Enter function name") { name ->
-                            if (name.isBlank()) return@openChat
-                            if (!name.isValidIdentifier()) return@openChat player.err("Function name is not a valid identifier!")
-                            if (name.length > 32) return@openChat player.err("Function name cannot be longer than 32 characters!")
-                            val newFunction = Function(name = name, icon = Material.MAP)
-                            newFunction.actions.add(Return())
+                        player.openDialogInput() {
+                            title = "Set Function Name"
+                            message = "Enter the name of the new function:"
+                            validator = { input ->
+                                if (input.isBlank()) {
+                                    error("Function name cannot be blank!")
+                                } else if (!input.isValidIdentifier()) {
+                                    error("Function name is not a valid identifier!")
+                                } else if (input.length > 32) {
+                                    error("Function name cannot be longer than 32 characters!")
+                                } else {
+                                    noError
+                                }
+                            }
+                            action = { name ->
+                                val newFunction = Function(name = name, icon = Material.MAP)
+                                newFunction.actions.add(Return())
 
-                            sandbox.functions.add(newFunction)
-                            this.open(player)
+                                sandbox.functions.add(newFunction)
+                                FunctionEditorMenu(newFunction).open(player)
+                            }
                         }
                     }
                     .buildItem())
@@ -75,23 +90,9 @@ class FunctionsMenu : AnvilMenu(
 
     private fun content(player: Player, sandbox: Sandbox): List<Item> {
         return sandbox.functions.map { function ->
-            PItem(Material.fromKey(function.icon)!!)
-                .name("<green>${function.name}")
-                .description(function.description)
-                .data("Actions", "${function.actions.size} actions", null)
-                .data("", "", null)
-                .data("", "<yellow>Variables", null)
-                .apply {
-                    function.arguments.forEach {
-                        this.data("<gray>${it.first.name}", "<white>${it.second}", null)
-                    }
-                }
-                .leftClick {
-                    ActionsMenu(function.actions, this).open(player)
-                    null
-                }
-                .rightClick {
-                    FunctionSettingsMenu(function).open(player)
+            function.createDisplayItem()
+                .leftClick("edit") {
+                    FunctionEditorMenu(function).open(player)
                 }
                 .buildItem()
         }

@@ -2,12 +2,25 @@ package llc.redstone.playground.commands
 
 import llc.redstone.playground.feature.housingMenu.PlaygroundMenu
 import llc.redstone.playground.managers.*
+import llc.redstone.playground.utils.colorize
+import llc.redstone.playground.utils.component
 import llc.redstone.playground.utils.err
 import llc.redstone.playground.utils.setInstanceSafe
 import llc.redstone.playground.utils.success
+import net.kyori.adventure.key.Key
+import net.kyori.adventure.nbt.CompoundBinaryTag
+import net.kyori.adventure.text.Component
 import net.minestom.server.coordinate.Pos
+import net.minestom.server.dialog.Dialog
+import net.minestom.server.dialog.DialogAction
+import net.minestom.server.dialog.DialogActionButton
+import net.minestom.server.dialog.DialogAfterAction
+import net.minestom.server.dialog.DialogBody
+import net.minestom.server.dialog.DialogInput
+import net.minestom.server.dialog.DialogMetadata
 import net.minestom.server.entity.GameMode
 import net.minestom.server.entity.Player
+import org.everbuild.asorda.resources.data.font.MenuCharacters
 import org.everbuild.celestia.orion.platform.minestom.api.command.Arg
 import org.everbuild.celestia.orion.platform.minestom.api.command.Kommand
 

@@ -13,6 +13,7 @@ import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.everbuild.asorda.resources.data.font.GlyphCharacters
+import org.everbuild.asorda.resources.data.font.mcFiveCalcWidth
 import org.everbuild.celestia.orion.core.packs.OrionPacks
 import java.util.*
 import java.util.Map.*
@@ -128,6 +129,49 @@ fun wrapLoreLines(component: Component, length: Int): List<Component> {
             }
 
             val wordLength = word.length
+            val totalLength = lineLength + wordLength
+            if (totalLength > length || word.contains("\n")) {
+                wrapped.add(currentLine)
+                currentLine = empty().style(style)
+                lineLength = 0
+            }
+
+            if (word != "\n") {
+                currentLine = currentLine.append(text(word).style(style))
+                lineLength += wordLength
+            }
+        }
+    }
+
+    if (lineLength > 0) {
+        wrapped.add(currentLine)
+    }
+
+    return wrapped
+}
+
+fun wrapMcFiveLoreLines(component: Component, length: Int): List<Component> {
+    if (component !is TextComponent) {
+        return Collections.singletonList(component)
+    }
+
+    val wrapped: MutableList<Component> = ArrayList()
+    val parts: List<TextComponent> = flattenTextComponents(component)
+
+    var currentLine: Component = empty()
+    var lineLength = 0
+
+    for (part in parts) {
+        val style: Style = part.style()
+        val content: String = part.content()
+        val words = content.split("(?<=\\s)|(?=\\n)".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+
+        for (word in words) {
+            if (word.isEmpty()) {
+                continue
+            }
+
+            val wordLength = mcFiveCalcWidth(word)
             val totalLength = lineLength + wordLength
             if (totalLength > length || word.contains("\n")) {
                 wrapped.add(currentLine)

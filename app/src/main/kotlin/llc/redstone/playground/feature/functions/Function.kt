@@ -9,19 +9,34 @@ import llc.redstone.playground.action.Action
 import llc.redstone.playground.action.ActionExecutor
 import llc.redstone.playground.feature.evalex.AbstractFunction
 import llc.redstone.playground.feature.evalex.PGExpression
+import llc.redstone.playground.menu.PItem
 
 class Function(
     var name: String = "",
     var description: String = "",
     icon: Material = Material.MAP,
     var actions: MutableList<Action> = mutableListOf(),
-    arguments: MutableList<Pair<FunctionParameterDefinitionBuilder, EvaluationValue.DataType>> = mutableListOf()
+    arguments: MutableList<FunctionParameterDefinitionBuilder> = mutableListOf()
 ) {
     var icon: String = icon.name()
-    var arguments: MutableList<Pair<FunctionParameterDefinition, EvaluationValue.DataType>> = arguments.map {
-        Pair(it.first.build(), it.second)
+    var arguments: MutableList<FunctionParameterDefinition> = arguments.map {
+        it.build()
     }.toMutableList()
     @Transient val evalFunction = EvalFunction(this.arguments, this)
+
+    fun createDisplayItem(): PItem {
+        return PItem(Material.fromKey(icon) ?: Material.MAP)
+            .name("<green>$name")
+            .description(description)
+            .data("Actions", "${actions.size} actions", null)
+            .data("", "", null)
+            .data("<yellow>Variables", "", null)
+            .apply {
+                arguments.forEach {
+                    this.data("", "<gray>${it.name}", null)
+                }
+            }
+    }
 
     fun evaluate(
         expression: PGExpression?,
@@ -39,7 +54,7 @@ class Function(
             PGExpression(it, expression.entity, expression.player, expression.sandbox, event).withValues(
                 hashMapOf(
                     *this.arguments.mapIndexed { index, it ->
-                        Pair(it.first.name, parameterValues[index])
+                        Pair(it.name, parameterValues[index])
                     }.toTypedArray()
                 )
             )
@@ -50,11 +65,11 @@ class Function(
 }
 
 class EvalFunction(
-    variables: MutableList<Pair<FunctionParameterDefinition, EvaluationValue.DataType>>,
+    variables: MutableList<FunctionParameterDefinition>,
     private val func: Function
 ) : AbstractFunction() {
     init {
-        for ((def, type) in variables) {
+        for (def in variables) {
             functionParameterDefinitions.add(def)
         }
     }

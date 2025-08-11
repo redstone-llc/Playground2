@@ -5,9 +5,11 @@ import net.minestom.server.entity.Player
 import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.window.Window
 
-abstract class NormalMenu(
-    title: Component
-): AbstractMenu(title) {
+abstract class
+NormalMenu(
+    title: Component,
+    displayName: Component = title
+): AbstractMenu(title, displayName) {
     // 9x(1-6)
     var topGui: Gui? = null
     // Player gui

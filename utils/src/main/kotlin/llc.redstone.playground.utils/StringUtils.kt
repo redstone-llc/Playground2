@@ -1,5 +1,6 @@
 package llc.redstone.playground.utils
 
+import org.everbuild.asorda.resources.data.font.mcFiveCalcWidth
 import java.util.*
 import java.util.regex.Matcher
 import java.util.regex.Pattern
@@ -59,5 +60,27 @@ object StringUtils {
             }
         }
         return capitalized.joinToString(joiner)
+    }
+
+    fun wrapText(text: String, maxLineLength: Int): MutableList<String> {
+        val words = text.split(" ")
+        val wrappedLines = mutableListOf<String>()
+        var currentLine = StringBuilder()
+
+        for (word in words) {
+            if (currentLine.isNotEmpty()) {
+                currentLine.append(" ")
+            }
+            if (currentLine.length + word.length > maxLineLength) {
+                wrappedLines.add(currentLine.toString())
+                currentLine = StringBuilder(word)
+            } else {
+                currentLine.append(word)
+            }
+        }
+        if (currentLine.isNotEmpty()) {
+            wrappedLines.add(currentLine.toString())
+        }
+        return wrappedLines
     }
 }

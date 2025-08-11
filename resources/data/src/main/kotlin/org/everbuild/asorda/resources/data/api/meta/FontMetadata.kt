@@ -19,5 +19,9 @@ data class FontMetadata(val entries: HashMap<String, FontMetadataEntry> = hashMa
             size = FontSizeEntry(width + 1, 0),
             codepoint = codepoint
         )
+        fun space(codepoint: String, width: Int, height: Int) = FontMetadataEntry(
+            size = FontSizeEntry(width, height),
+            codepoint = codepoint
+        )
     }
 }

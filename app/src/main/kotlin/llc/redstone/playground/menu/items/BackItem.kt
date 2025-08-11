@@ -13,7 +13,7 @@ import xyz.xenondevs.invui.item.impl.SimpleItem
 
 class BackItem(
     val backMenu: AbstractMenu,
-    val menuName: String = serialize(backMenu.title), // Would be smarter to always set this
+    val menuName: String = serialize(backMenu.displayName), // Would be smarter to always set this
     val item: ItemStack = PItem(GlobalIcons.empty.item()).name("<red>Go Back").description("To $menuName").build()
 ) : SimpleItem(item) {
     override fun handleClick(
