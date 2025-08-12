@@ -1,4 +1,4 @@
-@file:JvmName("PaletteGen")
+@file:JvmName("PaletteConv")
 
 package llc.redstone.playground.utils
 
@@ -101,7 +101,7 @@ fun drawPalettePng(
     file: File = File("LATTE.png")
 ) {
     val height = 18 * colors.size + 2 // 16px per color w/ padding + 2px for top/bottom border
-    val width = 18
+    val width = 90
     val img = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
     val g = img.createGraphics()
 
@@ -116,6 +116,9 @@ fun drawPalettePng(
         val inputHex = pair.value().hex()
         val colorName = pair.key()
 
+        // Draw the color name text
+        g.color = Color.WHITE
+        g.drawString(colorName, 18, y + 12)
 
         // Background is inputHex
         g.color = Color.decode("#$inputHex")
@@ -131,7 +134,7 @@ fun drawPalettePng(
 
 //    //Draw a line from 1,14 to 14,14 in color index 2
         g.color = Color.decode("#${colors[2]}")
-        g.drawLine(2, height - 2, width - 2, height - 2)
+        g.drawLine(2, y + 14, width - 1, y + 14)
 
         y += 18
     }
@@ -148,7 +151,7 @@ fun main() {
         val value = pair.value()
 
         val pal = makePalette(value.hex())
-        println("hex: ${value.hex()} -> $pal")
+//        println("hex: ${value.hex()} -> $pal")
         Pair(pair, pal)
     }
 
@@ -157,11 +160,13 @@ fun main() {
         File("LATTE.png")
     )
 
-//
-//    println("input: ${input.uppercase()}")
-//    println("output: ${palette.joinToString(", ")}")
-//
-//    val outFile = File("palette_${input.uppercase()}.png")
-//    drawPalettePng(input.uppercase(), palette, outFile)
-//    println("wrote: ${outFile.absolutePath}")
+    return
+
+    val input = readLine()?: return
+    val palette = makePalette(input)
+
+
+    println("input: ${input.uppercase()}")
+    println("output: ${palette.joinToString(", ")}")
+
 }
