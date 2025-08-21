@@ -58,7 +58,7 @@ class Schedule(
     }
 
     fun createDisplayItem(): PItem {
-        return PItem(Material.COMMAND_BLOCK)
+        return PItem(Material.REPEATING_COMMAND_BLOCK)
             .name(
                 when (scope) {
                     SANDBOX -> "<green>" // Run once

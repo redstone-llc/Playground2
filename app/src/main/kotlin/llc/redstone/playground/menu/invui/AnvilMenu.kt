@@ -34,7 +34,13 @@ abstract class AnvilMenu(
         anvilWindow.open()
     }
 
-    abstract fun initAnvilGUI(player: Player): Gui?
+    open fun initAnvilGUI(player: Player): Gui? {
+        return Gui.normal()
+            .setStructure(
+                "# # #"
+            ) // where the anvil input should be
+            .build()
+    }
     abstract fun initPlayerGUI(player: Player): Gui?
     abstract fun onRename(player: Player, name: String)
 

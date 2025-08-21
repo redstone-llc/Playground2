@@ -67,8 +67,6 @@ class SchedulesMenu : AnvilMenu(
                             validator = { input ->
                                 if (input.isBlank()) {
                                     error("Schedule name cannot be blank!")
-                                } else if (!input.isValidIdentifier()) {
-                                    error("Schedule name is not a valid identifier!")
                                 } else if (input.length > 32) {
                                     error("Schedule name cannot be longer than 32 characters!")
                                 } else {
