@@ -38,7 +38,7 @@ data class PotionEffect(
     Material.POTION
 ) {
     override suspend fun execute(
-        entity: Entity,
+        entity: Entity?,
         player: Player?,
         sandbox: Sandbox,
         event: Event?,

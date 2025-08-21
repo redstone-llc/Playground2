@@ -2,11 +2,11 @@ package llc.redstone.playground.database
 
 import com.gestankbratwurst.ambrosia.impl.mongodb.collections.MongoMap
 import llc.redstone.playground.Playground
-import llc.redstone.playground.Playground.gson
 import net.minestom.server.instance.InstanceContainer
 import llc.redstone.playground.action.Action
 import llc.redstone.playground.feature.functions.Function
 import llc.redstone.playground.feature.npc.NpcEntity
+import llc.redstone.playground.feature.schedules.Schedule
 import java.util.concurrent.ConcurrentHashMap
 
 object SandboxManager {
@@ -29,6 +29,10 @@ object SandboxManager {
         return dbMap.values.toList()
     }
 
+    fun getAllSandboxes(sandboxes: List<String>): List<Sandbox> {
+        return dbMap.values.filter { it.sandboxUUID in sandboxes }.toList()
+    }
+
     fun loadSandbox(sandboxUUID: String): Sandbox? {
         return dbMap[sandboxUUID]?.also { liveMap[sandboxUUID] = it }
     }
@@ -39,6 +43,23 @@ object SandboxManager {
     }
 }
 
+val default = Sandbox(
+    name = "Default Sandbox",
+    sandboxUUID = "default-sandbox-uuid",
+    ownerUUID = "default-owner-uuid"
+)
+
+fun migrateSandbox(sandbox: Sandbox) {
+    for (field in Sandbox::class.java.declaredFields) {
+        field.isAccessible = true
+        if (field.get(sandbox) == null && field.get(default) != null) {
+            field.set(sandbox, field.get(default))
+            println("Migrated field ${field.name} in sandbox ${sandbox.sandboxUUID}")
+        }
+    }
+    SandboxManager.saveSandbox(sandbox)
+}
+
 data class Sandbox(
     val name: String,
     val sandboxUUID: String,
@@ -47,6 +68,7 @@ data class Sandbox(
     var playerVariables: MutableMap<String, MutableMap<String, Any?>> = mutableMapOf(),
     var globalVariables: MutableMap<String, Any?> = mutableMapOf(),
     var functions: MutableList<Function> = mutableListOf(),
+    var schedules: MutableList<Schedule> = mutableListOf(),
     var npcs: MutableList<NpcEntity> = mutableListOf(),
     ) {
     @Transient var instance: InstanceContainer? = null

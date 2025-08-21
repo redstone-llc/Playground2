@@ -42,6 +42,7 @@ class EventList<E : Event>(
             EventListener.Result.SUCCESS
         } catch (e: Exception) {
             Logger.error("Error in event listener for ${eventType.simpleName}", e)
+            e.printStackTrace()
             EventListener.Result.EXCEPTION
         }
     }

@@ -1,123 +1,98 @@
 package llc.redstone.playground.feature.functions
 
+import com.ezylang.evalex.functions.FunctionParameterDefinition
 import feature.actionMenu.ActionsMenu
 import net.minestom.server.entity.Player
 import llc.redstone.playground.managers.getSandbox
 import llc.redstone.playground.menu.PItem
 import llc.redstone.playground.menu.items.BackItem
+import llc.redstone.playground.menu.items.ForwardItem
+import llc.redstone.playground.menu.items.ReverseItem
+import llc.redstone.playground.menu.menus.ConfirmMenu
 import llc.redstone.playground.menu.menus.MaterialSelector
-import llc.redstone.playground.utils.DefaultFontInfo
-import llc.redstone.playground.utils.StringUtils
+import llc.redstone.playground.utils.VariableUtils.toBuilder
 import llc.redstone.playground.utils.colorize
 import llc.redstone.playground.utils.component
+import llc.redstone.playground.utils.dialogs.TextDialogBuilder
 import llc.redstone.playground.utils.err
 import llc.redstone.playground.utils.error
 import llc.redstone.playground.utils.isValidIdentifier
 import llc.redstone.playground.utils.item
 import llc.redstone.playground.utils.noError
-import llc.redstone.playground.utils.openChat
-import llc.redstone.playground.utils.openDialogInput
-import llc.redstone.playground.utils.removeColor
-import llc.redstone.playground.utils.serialize
+import llc.redstone.playground.utils.openTextInput
 import llc.redstone.playground.utils.success
-import llc.redstone.playground.utils.wrapLoreLines
-import llc.redstone.playground.utils.wrapMcFiveLoreLines
 import net.kyori.adventure.text.Component
+import net.minestom.server.item.ItemStack
+import net.minestom.server.item.Material
 import org.everbuild.asorda.resources.data.font.MenuCharacters
-import org.everbuild.asorda.resources.data.font.mcFiveCalcWidth
+import org.everbuild.asorda.resources.data.items.FunctionIcons
 import org.everbuild.asorda.resources.data.items.GlobalIcons
-import org.everbuild.celestia.orion.core.packs.OrionPacks
 import xyz.xenondevs.invui.gui.Gui
+import xyz.xenondevs.invui.gui.PagedGui
+import xyz.xenondevs.invui.gui.ScrollGui
+import xyz.xenondevs.invui.gui.structure.Markers
+import xyz.xenondevs.invui.item.Item
 
 class FunctionEditorMenu(
     private val function: Function,
-    private val tab: Int = 1,
-    private var titleWidth: Int = mcFiveCalcWidth("FUNCTION EDITOR: ${function.name}")
+    private var tab: Int = 1
 ) : ActionsMenu(
-    title = when (tab) {
-        1 -> MenuCharacters.functionEditorInfo.component(-8)
-        2 -> MenuCharacters.functionEditorSettings.component(-8)
-
-        else -> Component.text("error")
-    }.append {
-        OrionPacks.getSpaceComponent(-173 + ((173 - titleWidth) / 2))
-            .append(colorize("<font:playground:mcfive><black>FUNCTION EDITOR: ${function.name}</black></font>"))
-    }.append {
-        if (tab != 1) {
-            Component.text {}
-        } else {
-            //TODO fix this :)
-            val lines = wrapMcFiveLoreLines(colorize(function.description), 160)
-            var comp = OrionPacks.getSpaceComponent(titleWidth * -1 + 36)
-            var width = 0;
-            for ((i, line) in lines.withIndex()) {
-                var str = serialize(line).trim()
-
-                if (i == 3) {
-                    str += "..."
-                }
-
-                comp = comp.append(
-                    OrionPacks.getSpaceComponent(-1 * width)
-                        .append(colorize("<font:playground:mc_${i + 14}><black>${str}</black></font>"))
-                )
-
-                width = DefaultFontInfo.getDefaultFontInfo(removeColor(str))
-
-                if (i == 3) {
-                    break
-                }
-            }
-            comp
-        }
-    },
+    title = Component.empty(),
     displayName = colorize("<green>Function Editor"),
     actions = function.actions
 ) {
+    private var prevTab = tab
 
-    private fun <G : Gui, S : Gui.Builder<G, S>> Gui.Builder<G, S>.createDefault(): S {
-        return this.setStructure(
-            "# # # # # # # # #",
-            "# d # D # V # M #",
-            "# # # # # # # # #",
-            "b # # # # # # i s"
-        )
-            .addIngredient('b', BackItem(FunctionsMenu()))
+    override fun title(): Component {
+        return MenuCharacters.functionEditorActions.component(-10).append {
+            when (tab) {
+                1 -> MenuCharacters.functionEditorActionsSettings.component(-181)
+                2 -> MenuCharacters.functionEditorArguments.component(-181)
+                3 -> MenuCharacters.functionEditorSettings.component(-181)
+                4 -> MenuCharacters.actionLibrary.component(-181)
+                else -> Component.text("error")
+            }
+        }
     }
 
-    fun initFunctionInfoTab(player: Player): Gui? {
+    fun initFunctionActionsSettingsTab(player: Player): Gui? {
         return Gui.normal()
-            .createDefault()
-            .addIngredient('d', function.createDisplayItem().buildItem())
-            .addIngredient(
-                'i', PItem(GlobalIcons.empty.item())
-                    .name("<red>Info")
-                    .description("Stuff about the function")
-                    .build()
+            .setStructure(
+                "# # # # # # # # #",
+                "# c # p # i # e #",
+                "# # # # # # # # #",
+                "b # # A a s # # f"
             )
+            .addIngredient('b', BackItem(FunctionsMenu()))
+            .addTabButtons(player)
             .addIngredient(
-                's',
-                PItem(GlobalIcons.empty.item())
-                    .name("<green>Settings")
-                    .description("Stuff that the function has that should be changed")
-                    .leftClick("switch to tab") {
-                        FunctionEditorMenu(function, 2).open(player)
-                        null
-                    }
-                    .buildItem()
+                'f',
+                function.createDisplayItem().build()
             )
             .build()
     }
 
     fun initFunctionSettingsTab(player: Player): Gui? {
         return Gui.normal()
-            .createDefault()
+            .setStructure(
+                "# # # # # # # # #",
+                "# n # d # m # D #",
+                "# # # # # # # # #",
+                "b # # A a s # # f"
+            )
+            .addIngredient('b', BackItem(FunctionsMenu()))
+            .addTabButtons(player)
             .addIngredient(
-                'd', PItem(GlobalIcons.empty.item())
+                'f',
+                function.createDisplayItem().build()
+            )
+
+            .addIngredient(
+                'n', PItem(GlobalIcons.empty.item())
                     .name("<green>Change Name")
                     .description("Change the name of the function")
                     .leftClick("open dialog") {
-                        player.openDialogInput() {
+                        player.openTextInput() {
                             title = "<primary>Change Function Name"
                             message = "Enter the new name for the function:"
                             previous = function.name
@@ -138,26 +113,15 @@ class FunctionEditorMenu(
                     .buildItem()
             )
             .addIngredient(
-                'D', PItem(GlobalIcons.empty.item())
+                'd', PItem(GlobalIcons.empty.item())
                     .name("<green>Change Description")
                     .description("Change the description of the function")
                     .leftClick("open chat") {
-                        player.openDialogInput() {
+                        player.openTextInput() {
                             title = "<primary>Change Function Description"
                             message = "Enter the new description for the function:"
                             previous = function.description
-                            visualizer = { input ->
-                                val lines = wrapMcFiveLoreLines(colorize(function.description), 160)
-                                var comp = Component.empty()
-                                for ((i, line) in lines.withIndex()) {
-                                    var str = serialize(line).trim()
-                                    if (i == 3) {
-                                        str += "..."
-                                    }
-                                    comp = comp.append(colorize("<font:playground:mcfive>${str}</font>\n").shadowColor(null))
-                                }
-                                comp
-                            }
+                            visualizer = TextDialogBuilder.mcFiveVisualizer
                             validator = { newDescription ->
                                 if (newDescription.isBlank())
                                     error("Function description cannot be empty!")
@@ -173,16 +137,7 @@ class FunctionEditorMenu(
                     .buildItem()
             )
             .addIngredient(
-                'V', PItem(GlobalIcons.empty.item())
-                    .name("<green>Edit Arguments")
-                    .description("Edit the arguments of the function")
-                    .leftClick("open argument editor") {
-                        null
-                    }
-                    .buildItem()
-            )
-            .addIngredient(
-                'M', PItem(GlobalIcons.empty.item())
+                'm', PItem(GlobalIcons.empty.item())
                     .name("<green>Change Icon")
                     .description("Change the icon of the function")
                     .leftClick("open material selector") {
@@ -194,29 +149,234 @@ class FunctionEditorMenu(
                     .buildItem()
             )
             .addIngredient(
-                'i', PItem(GlobalIcons.empty.item())
-                    .name("<green>Info")
-                    .description("Stuff about the function")
-                    .leftClick("switch to tab") {
-                        FunctionEditorMenu(function, 1).open(player)
-                        null
+                'D', PItem(GlobalIcons.empty.item())
+                    .name("<red>Delete Function")
+                    .description("Delete this function permanently")
+                    .leftClick("delete function") {
+                        ConfirmMenu(this) {
+                            player.getSandbox()!!.functions.remove(function)
+                            player.success("Function ${function.name} deleted!")
+                            FunctionsMenu().open(player)
+                        }.open(player)
                     }
                     .buildItem()
-            )
-            .addIngredient(
-                's',
-                PItem(GlobalIcons.empty.item())
-                    .name("<red>Settings")
-                    .description("Stuff that the function has that should be changed")
-                    .build()
             )
             .build()
     }
 
+    private var selectedArgument: Int? = null
+
+    fun initFunctionArgumentsTab(player: Player): Gui? {
+        return PagedGui.items()
+            .setStructure(
+                "p x x x x x n N N",
+                "p x x x x x n V V",
+                "p x x x x x n D D",
+                "b # # A a s # # f"
+            )
+            .addIngredient('b', BackItem(FunctionsMenu()))
+            .addTabButtons(player)
+            .addIngredient(
+                'f',
+                function.createDisplayItem().build()
+            )
+            .addIngredient('x', Markers.CONTENT_LIST_SLOT_HORIZONTAL)
+            .addIngredient('p', ReverseItem())
+            .addIngredient('n', ForwardItem())
+            .setContent(functionArgumentsTabContent(player))
+            .addIngredient(
+                'N', PItem(GlobalIcons.empty.item())
+                    .name("<green>Change Name")
+                    .description("Change the name of the selected argument" + if (selectedArgument == null) "\n\n<red>Please select an argument to change the name</red>" else "")
+                    .apply {
+                        if (selectedArgument != null) {
+                            leftClick("open dialog") {
+                                player.openTextInput() {
+                                    title = "<primary>Change Argument Name"
+                                    message = "Enter the new name for the argument:"
+                                    previous = function.arguments[selectedArgument!!].name
+                                    validator = { newName ->
+                                        if (!newName.isValidIdentifier())
+                                            error("Argument name is not a valid identifier!")
+                                        else if (function.arguments.any { it.name == newName && it != function.arguments[selectedArgument!!] })
+                                            error("Argument name already exists!")
+                                        else noError
+                                    }
+                                    action = { newName ->
+                                        function.arguments[selectedArgument!!] =
+                                            function.arguments[selectedArgument!!].toBuilder().name(newName).build()
+                                        player.success("Argument name changed to $newName")
+                                    }
+                                }
+                            }
+                        }
+                    }.buildItem()
+            )
+            .addIngredient(
+                'V', PItem(GlobalIcons.empty.item())
+                    .name("<green>Toggle Greedy Argument")
+                    .description("Change if the selected argument is a variable argument (greedy)" + if (selectedArgument == null) "\n\n<red>Please select an argument to toggle</red>" else "")
+                    .apply {
+                        if (selectedArgument != null) {
+                            leftClick("toggle variable argument") {
+                                function.arguments[selectedArgument!!] =
+                                    function.arguments[selectedArgument!!].toBuilder()
+                                        .isVarArg(!function.arguments[selectedArgument!!].isVarArg).build()
+                                player.success("Argument ${function.arguments[selectedArgument!!].name} is now ${if (function.arguments[selectedArgument!!].isVarArg) "a variable argument" else "not a variable argument"}")
+                            }
+                        }
+                    }.buildItem()
+            )
+            .addIngredient(
+                'D', PItem(GlobalIcons.empty.item())
+                    .name("<red>Delete Argument")
+                    .description("Delete the selected argument" + if (selectedArgument == null) "\n\n<red>Please select an argument to delete</red>" else "")
+                    .apply {
+                        if (selectedArgument != null) {
+                            leftClick("delete argument") {
+                                function.arguments.removeAt(selectedArgument!!)
+                                player.success("Argument deleted!")
+                                selectedArgument = null
+                                open(player)
+                            }
+                        }
+                    }.buildItem()
+            )
+            .build()
+    }
+
+    fun functionArgumentsTabContent(player: Player): List<Item> {
+        return function.arguments.mapIndexed { index, it ->
+            PItem(if (selectedArgument == index) FunctionIcons.selectedArgument.item() else ItemStack.of(Material.PAPER))
+                .name(it.name)
+                .info("Argument")
+                .data("Greedy", if (it.isVarArg) "<green>Yes" else "<red>No", null)
+                .apply {
+                    if (selectedArgument == index) {
+                        leftClick("deselect argument") {
+                            selectedArgument = null
+                            open(player)
+                        }
+                    } else {
+                        leftClick("select argument") {
+                            selectedArgument = index
+                            open(player)
+                        }
+                    }
+                }
+                .buildItem()
+        }.plus(
+            PItem(FunctionIcons.addArgument.item())
+                .name("<green>Add Argument")
+                .description("Add a new argument to the function")
+                .leftClick("add argument") {
+                    player.openTextInput {
+                        title = "<primary>Add Function Argument"
+                        message = "Enter the name of the new argument:"
+                        previous = "newArgument"
+                        validator = { newName ->
+                            if (!newName.isValidIdentifier())
+                                error("Argument name is not a valid identifier!")
+                            else if (function.arguments.any { it.name == newName })
+                                error("Argument name already exists!")
+                            else noError
+                        }
+                        action = { newName ->
+                            function.arguments.add(FunctionParameterDefinition.builder().name(newName).build())
+                            player.success("Argument $newName added to function ${function.name}")
+                            open(player)
+                        }
+                    }
+                }
+                .buildItem()
+        )
+    }
+
+    fun <G : Gui, S : Gui.Builder<G, S>> Gui.Builder<G, S>.addTabButtons(player: Player): Gui.Builder<G, S> {
+        addIngredient(
+            'A',
+            PItem(GlobalIcons.empty.item())
+                .name(if (tab != 1) "<green>Actions Settings" else "<red>Actions Settings")
+                .description("Copy, paste, import or export actions")
+                .apply {
+                    if (tab != 1) leftClick("go to actions settings tab") {
+                        tab = 1
+                        open(player)
+                    }
+                }
+                .buildItem()
+        )
+        addIngredient(
+            'a',
+            PItem(GlobalIcons.empty.item())
+                .name(if (tab != 2) "<green>Arguments" else "<red>Arguments")
+                .description("Edit the arguments of the function")
+                .apply {
+                    if (tab != 2) leftClick("go to args tab") {
+                        tab = 2
+                        open(player)
+                    }
+                }
+                .buildItem()
+        )
+        addIngredient(
+            's',
+            PItem(GlobalIcons.empty.item())
+                .name(if (tab != 3) "<green>Settings" else "<red>Settings")
+                .description("Stuff that the function has that should be changed")
+                .apply {
+                    if (tab != 3) leftClick("go to settings tab") {
+                        tab = 3
+                        open(player)
+                    }
+                }
+                .buildItem()
+        )
+        return this
+    }
+
+    override fun actionLibraryGui(player: Player): PagedGui.Builder<Item> {
+        return super.actionLibraryGui(player)
+            .addIngredient(
+                'b', PItem(GlobalIcons.empty.item())
+                    .name("<red>Back to Previous Tab")
+                    .description("Go back to the function editor tab you were on")
+                    .leftClick("go back") {
+                        tab = prevTab
+                        open(player)
+                    }
+                    .buildItem()
+            )
+    }
+
+    override fun topGui(player: Player): ScrollGui.Builder<Item> {
+        return super.topGui(player)
+            .addIngredient(
+                'a', PItem(GlobalIcons.empty.item())
+                    .name(if (tab != 4) "<green>Action Library" else "<red>Action Library")
+                    .description("Open the action library to view all available actions.")
+                    .apply {
+                        if (tab != 4) leftClick("open action library") {
+                            prevTab = tab
+                            tab = 4
+                            open(player)
+                        } else {
+                            leftClick("close action library") {
+                                tab = prevTab
+                                open(player)
+                            }
+                        }
+                    }
+                    .buildItem()
+            )
+    }
+
     override fun initBottomGUI(player: Player): Gui? {
         when (tab) {
-            1 -> return initFunctionInfoTab(player)
-            2 -> return initFunctionSettingsTab(player)
+            1 -> return initFunctionActionsSettingsTab(player)
+            2 -> return initFunctionArgumentsTab(player)
+            3 -> return initFunctionSettingsTab(player)
+            4 -> return super.initBottomGUI(player)
             else -> {
                 player.err("Invalid tab: $tab")
                 return null

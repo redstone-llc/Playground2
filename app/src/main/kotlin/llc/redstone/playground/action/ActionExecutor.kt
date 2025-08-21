@@ -13,7 +13,8 @@ import llc.redstone.playground.database.Sandbox
 import llc.redstone.playground.utils.minecraftServer
 
 class ActionExecutor(
-    private val entity: Entity, private val player: Player?, private val sandbox: Sandbox, private val event: Event?,
+    private val entity: Entity?, private val player: Player?, private val sandbox: Sandbox, private val event: Event?,
+    private val actionScope: ActionScope = ActionScope.PLAYER,
     private val actions: List<Action>
 ) {
     fun execute(expression: (String) -> PGExpression = { PGExpression(it, entity, player, sandbox, event) }): EvaluationValue? {
@@ -47,5 +48,11 @@ class ActionExecutor(
         }
 
         return null
+    }
+
+    enum class ActionScope {
+        SANDBOX, // (just sandbox)
+        ENTITY, // (sandbox and entity)
+        PLAYER // (sandbox, player, and entity)
     }
 }

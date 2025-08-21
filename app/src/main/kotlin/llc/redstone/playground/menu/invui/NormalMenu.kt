@@ -20,7 +20,7 @@ NormalMenu(
         bottomGui = initBottomGUI(player)
         val window = if (bottomGui == null) {
              Window.single()
-                .setTitle(title)
+                .setTitle(title())
                 .setViewer(player)
                 .addCloseHandler {
                     onClose(player)
@@ -31,7 +31,7 @@ NormalMenu(
                 }
         } else {
             Window.split()
-                .setTitle(title)
+                .setTitle(title())
                 .setViewer(player)
                 .addCloseHandler {
                     onClose(player)
@@ -44,6 +44,10 @@ NormalMenu(
         }
         this.window = window.build()
         this.window.open()
+    }
+
+    open fun title(): Component {
+        return title
     }
 
     abstract fun initTopGUI(player: Player): Gui

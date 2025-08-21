@@ -10,27 +10,57 @@ object MenuCharacters : ContentList() {
         ascent(13)
     }
 
-    val actionsSearchMenu = createBitmapCharacter("actions_search_menu") {
-        texture(Texture("font/menu/actions_search_menu"))
+    val actionsBase = createBitmapCharacter("actions_base") {
+        texture(Texture("font/menu/actions_base"))
         height(256)
-        ascent(13)
+        ascent(16)
     }
 
-    val functionEditorInfo = createBitmapCharacter("function_editor_info") {
-        texture(Texture("font/menu/function_editor_info"))
+    val actionLibrary = createBitmapCharacter("action_library") {
+        texture(Texture("font/menu/action_library"))
         height(256)
-        ascent(13)
+        ascent(16)
+    }
+
+    val functionEditorActions = createBitmapCharacter("function_editor_actions") {
+        texture(Texture("font/menu/function_editor_actions"))
+        height(256)
+        ascent(16)
+    }
+
+    val functionEditorActionsSettings = createBitmapCharacter("function_editor_actions_settings") {
+        texture(Texture("font/menu/function_editor_actions_settings"))
+        height(256)
+        ascent(16)
     }
 
     val functionEditorSettings = createBitmapCharacter("function_editor_settings") {
         texture(Texture("font/menu/function_editor_settings"))
         height(256)
-        ascent(13)
+        ascent(16)
     }
 
-//    val functionEditorArguments = createBitmapCharacter("function_editor_args") {
-//        texture(Texture("font/menu/function_editor_args"))
-//        height(256)
-//        ascent(13)
-//    }
+    val functionEditorArguments = createBitmapCharacter("function_editor_arguments") {
+        texture(Texture("font/menu/function_editor_arguments"))
+        height(256)
+        ascent(16)
+    }
+
+    val scheduleEditorActions = createBitmapCharacter("schedule_editor_actions") {
+        texture(Texture("font/menu/schedule_editor_actions"))
+        height(256)
+        ascent(16)
+    }
+
+    val scheduleEditorSettings = createBitmapCharacter("schedule_editor_settings") {
+        texture(Texture("font/menu/schedule_editor_settings"))
+        height(256)
+        ascent(16)
+    }
+
+    val scheduleEditorActionsSettings = createBitmapCharacter("schedule_editor_actions_settings") {
+        texture(Texture("font/menu/schedule_editor_actions_settings"))
+        height(256)
+        ascent(16)
+    }
 }

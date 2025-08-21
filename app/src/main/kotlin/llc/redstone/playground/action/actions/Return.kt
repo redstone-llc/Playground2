@@ -25,7 +25,7 @@ class Return(
     Material.ARROW
 ) {
     override fun syncExecute(
-        entity: Entity, player: Player?, sandbox: Sandbox, event: Event?,
+        entity: Entity?, player: Player?, sandbox: Sandbox, event: Event?,
         expression: (String) -> PGExpression
     ): EvaluationValue? {
         if (returnValue == null) {
@@ -36,7 +36,7 @@ class Return(
     }
 
     override suspend fun execute(
-        entity: Entity,
+        entity: Entity?,
         player: Player?,
         sandbox: Sandbox,
         event: Event?,

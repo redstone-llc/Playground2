@@ -1,6 +1,7 @@
 package llc.redstone.playground.action
 
 import com.ezylang.evalex.data.EvaluationValue
+import com.github.shynixn.mccoroutine.minestom.launch
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.asExecutor
 import kotlinx.coroutines.invoke
@@ -51,16 +52,17 @@ abstract class Action(
     }
 
     open fun syncExecute(
-        entity: Entity, player: Player?, sandbox: Sandbox, event: Event?,
+        entity: Entity?, player: Player?, sandbox: Sandbox, event: Event?,
         expression: (String) -> PGExpression = { PGExpression(it, entity, player, sandbox, event) }
     ): EvaluationValue? {
-
-
+        minecraftServer.launch {
+            execute(entity, player, sandbox, event, expression)
+        }
         return null
     }
 
     abstract suspend fun execute(
-        entity: Entity, player: Player?, sandbox: Sandbox, event: Event?, expression: (String) -> PGExpression = {
+        entity: Entity?, player: Player?, sandbox: Sandbox, event: Event?, expression: (String) -> PGExpression = {
             PGExpression(it, entity, player, sandbox, event)
         }
     )
@@ -83,12 +85,10 @@ abstract class Action(
         return builder
     }
 
-    fun createAddDisplayItem(): MenuItem {
-        val builder = MenuItem(ItemStack.of(icon))
+    fun createAddDisplayItem(): PItem {
+        val builder = PItem(ItemStack.of(icon))
         builder.name("<yellow>$name")
         builder.description(description)
-        builder.action(ClickType.LEFT_CLICK, "to add")
-
         return builder
     }
 

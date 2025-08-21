@@ -28,7 +28,7 @@ data class PlayerVar(
     Material.FEATHER
 ) {
     override suspend fun execute(
-        entity: Entity,
+        entity: Entity?,
         player: Player?,
         sandbox: Sandbox,
         event: Event?,

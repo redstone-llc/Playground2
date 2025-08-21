@@ -1,4 +1,4 @@
-package llc.redstone.playground.feature.functions
+package llc.redstone.playground.feature.schedules
 
 import llc.redstone.playground.action.ActionExecutor
 import net.minestom.server.entity.Player
@@ -25,9 +25,9 @@ import xyz.xenondevs.invui.gui.PagedGui
 import xyz.xenondevs.invui.gui.structure.Markers
 import xyz.xenondevs.invui.item.Item
 
-class FunctionsMenu : AnvilMenu(
+class SchedulesMenu : AnvilMenu(
     title = MenuCharacters.functionSearchMenu.component(-60),
-    displayName = colorize("<green>Functions Menu")
+    displayName = colorize("<green>Schedules Menu")
 ) {
     var search = ""
     override fun initAnvilGUI(player: Player): Gui {
@@ -58,35 +58,37 @@ class FunctionsMenu : AnvilMenu(
 //            .addIngredient('f') TODO: cycle items
             .addIngredient(
                 'a', PItem()
-                    .name("<green>Add Function")
+                    .name("<green>Add Schedule")
                     .description("")
                     .leftClick {
                         player.openTextInput() {
-                            title = "Set Function Name"
-                            message = "Enter the name of the new function:"
+                            title = "Set Schedule Name"
+                            message = "Enter the name of the new schedule:"
                             validator = { input ->
                                 if (input.isBlank()) {
-                                    error("Function name cannot be blank!")
+                                    error("Schedule name cannot be blank!")
                                 } else if (!input.isValidIdentifier()) {
-                                    error("Function name is not a valid identifier!")
+                                    error("Schedule name is not a valid identifier!")
                                 } else if (input.length > 32) {
-                                    error("Function name cannot be longer than 32 characters!")
+                                    error("Schedule name cannot be longer than 32 characters!")
                                 } else {
                                     noError
                                 }
                             }
                             action = { name ->
                                 player.openMultiInput {
-                                    title = "Function Scope"
-                                    message = "Select the function scope that determines where this function can be used."
+                                    title = "Schedule Scope"
+                                    message = "Select the schedule scope that determines where this schedule can be used."
                                     options = mutableListOf("player", "entity", "sandbox")
                                     action = { scope ->
-                                        val functionScope = ActionExecutor.ActionScope.valueOf(scope.uppercase())
-                                        val newFunction = Function(name, functionScope, icon = Material.MAP)
-                                        newFunction.actions.add(Return())
+                                        val scheduleScope = ActionExecutor.ActionScope.valueOf(scope.uppercase())
+                                        val newSchedule = Schedule(name, scheduleScope)
 
-                                        sandbox.functions.add(newFunction)
-                                        FunctionEditorMenu(newFunction).open(player)
+                                        sandbox.schedules.add(newSchedule)
+
+                                        newSchedule.createScheduleTask(sandbox)
+
+                                        ScheduleEditorMenu(newSchedule).open(player)
                                     }
                                 }
                             }
@@ -98,10 +100,10 @@ class FunctionsMenu : AnvilMenu(
     }
 
     private fun content(player: Player, sandbox: Sandbox): List<Item> {
-        return sandbox.functions.map { function ->
-            function.createDisplayItem()
+        return sandbox.schedules.map { schedule ->
+            schedule.createDisplayItem()
                 .leftClick("edit") {
-                    FunctionEditorMenu(function).open(player)
+                    ScheduleEditorMenu(schedule).open(player)
                 }
                 .buildItem()
         }

@@ -25,18 +25,14 @@ data class WaitAction(
 ) {
 
     override suspend fun execute(
-        entity: Entity,
+        entity: Entity?,
         player: Player?,
         sandbox: Sandbox,
         event: Event?,
         expression: (String) -> PGExpression
     ) {
-        // Convert duration from ticks to milliseconds
         val duration = this.doubleValue(expression(duration))
         val waitTime = (duration * 50).toLong() // 1 tick = 50 milliseconds
         kotlinx.coroutines.delay(waitTime)
-
-        // After waiting, you can continue with any further actions if needed
-        // For now, this action simply waits and does nothing else.
     }
 }

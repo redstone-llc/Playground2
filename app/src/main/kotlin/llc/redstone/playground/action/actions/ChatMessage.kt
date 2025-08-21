@@ -16,7 +16,7 @@ import llc.redstone.playground.utils.colorize
 data class ChatMessage(
     @DisplayName("Message") @Description("The message to send to the player.")
     @StringPropertyAnnotation
-    val message: String = "<yellow>Hello, world!"
+    var message: String = "\"<yellow>Hello, world!\""
 ): Action(
     ActionEnum.CHAT_MESSAGE,
     "Display Chat Message",
@@ -24,7 +24,7 @@ data class ChatMessage(
     Material.PAPER
 ) {
     override suspend fun execute(
-        entity: Entity,
+        entity: Entity?,
         player: Player?,
         sandbox: Sandbox,
         event: Event?,

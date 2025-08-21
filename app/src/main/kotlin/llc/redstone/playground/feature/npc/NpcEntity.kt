@@ -207,6 +207,7 @@ abstract class NpcEntity(
             player,
             sandbox,
             event,
+            ActionExecutor.ActionScope.ENTITY,
             actions
         ).execute()
     }

@@ -19,7 +19,7 @@ class CancelEvent : Action(
 ) {
 
     override fun syncExecute(
-        entity: Entity, player: Player?, sandbox: Sandbox, event: Event?,
+        entity: Entity?, player: Player?, sandbox: Sandbox, event: Event?,
         expression: (String) -> PGExpression
     ): EvaluationValue? {
         if (event == null || event !is CancellableEvent) {
@@ -31,7 +31,7 @@ class CancelEvent : Action(
     }
 
     override suspend fun execute(
-        entity: Entity,
+        entity: Entity?,
         player: Player?,
         sandbox: Sandbox,
         event: Event?,

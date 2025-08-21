@@ -4,6 +4,7 @@ import llc.redstone.playground.action.ActionExecutor
 import llc.redstone.playground.database.Sandbox
 import llc.redstone.playground.database.SandboxInstanceManager
 import llc.redstone.playground.database.SandboxManager
+import llc.redstone.playground.database.migrateSandbox
 import llc.redstone.playground.feature.events.EventType
 import llc.redstone.playground.sandbox.createTemplatePlatform
 import net.hollowcube.polar.*
@@ -98,6 +99,7 @@ fun Sandbox.startEventListener() {
                 if (e is PlayerEntityInteractEvent) e.player else e.entity,
                 this,
                 e,
+                if (e is PlayerEntityInteractEvent) ActionExecutor.ActionScope.ENTITY else ActionExecutor.ActionScope.PLAYER,
                 actions
             ).execute()
         }
@@ -131,10 +133,11 @@ fun Sandbox.save() {
     )
 }
 
-fun loadSandboxes() {
-    val sandboxes = SandboxManager.getAllSandboxes()
+fun loadSandboxes(sandboxes: List<String>) {
+    val sandboxes = SandboxManager.getAllSandboxes(sandboxes)
     for (sandbox in sandboxes) {
         loadedSandboxes[sandbox.sandboxUUID] = sandbox
+        migrateSandbox(sandbox)
         sandbox.loadInstance()
     }
 }

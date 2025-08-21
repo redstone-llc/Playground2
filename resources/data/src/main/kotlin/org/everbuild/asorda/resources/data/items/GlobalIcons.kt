@@ -15,4 +15,6 @@ object GlobalIcons : ContentList("global") {
                 textures("layer0" to Texture("lixel/$name"))
             })
         }
+
+
 }

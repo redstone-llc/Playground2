@@ -13,17 +13,26 @@ import io.github.togar2.pvp.feature.CombatFeatureSet
 import io.github.togar2.pvp.feature.CombatFeatures
 import llc.redstone.playground.action.Action
 import llc.redstone.playground.commands.PlaygroundCommand
+import llc.redstone.playground.managers.loadInstance
 import llc.redstone.playground.managers.loadSandboxes
+import llc.redstone.playground.managers.loadedSandboxes
 import llc.redstone.playground.utils.ActionTypeAdapter
 import llc.redstone.playground.utils.EntityTypeTypeAdapter
+import llc.redstone.playground.utils.MessageUtils
+import llc.redstone.playground.utils.err
 import llc.redstone.playground.utils.initMinecraftServer
 import llc.redstone.playground.utils.logging.Loading
 import llc.redstone.playground.utils.logging.Logger
+import llc.redstone.playground.utils.setInstanceSafe
 import me.lucko.spark.minestom.SparkMinestom
 import net.minestom.server.MinecraftServer
+import net.minestom.server.coordinate.Pos
 import net.minestom.server.entity.EntityType
 import net.minestom.server.entity.Player
+import net.minestom.server.event.player.AsyncPlayerConfigurationEvent
+import net.minestom.server.event.player.PlayerSpawnEvent
 import net.minestom.server.extras.MojangAuth
+import net.sinender.lobby.LOBBY_INSTANCE
 import net.sinender.lobby.createLobbyInstance
 import org.bson.UuidRepresentation
 import org.everbuild.blocksandstuff.blocks.BlockBehaviorRuleRegistrations
@@ -36,16 +45,40 @@ import org.everbuild.celestia.orion.platform.minestom.pack.withResourcePacksInDe
 import java.nio.file.Path
 
 
-object Playground : OrionServer() {
-    lateinit var mongoAmbrosia: MongoAmbrosia
-    lateinit var gson: Gson
+class Playground(
+    val sandboxes: MutableList<String>
+) : OrionServer() {
+    companion object {
+        lateinit var mongoAmbrosia: MongoAmbrosia
+        lateinit var gson: Gson
+    }
 
     init {
         Loading.start("Pre-Initializing Playground") { initMinecraftServer(server); message("Pre-Initialized Playground", 1.0) }
 
         Loading.start("Playground Startup") {
             progress(0.0)
-            Loading.start("Creating Lobby Instance") { createLobbyInstance(); message("Lobby instance created", 1.0) }
+            Loading.start("Creating Lobby Instance") {
+                if (sandboxes.isEmpty() || sandboxes.size > 1) {
+                    createLobbyInstance(); message("Lobby instance created", 1.0)
+                } else {
+                    // If only one sandbox is specified, we can skip creating a lobby instance
+                    message("Skipping lobby instance creation, single sandbox mode", 1.0)
+                    MinecraftServer.getGlobalEventHandler().addListener(AsyncPlayerConfigurationEvent::class.java) { event ->
+                        val player = event.player
+                        val uuid = sandboxes.firstOrNull() ?: return@addListener
+                        val sandbox = loadedSandboxes[uuid] ?: return@addListener player.kick(MessageUtils.err("Sandbox with UUID $uuid not found."))
+                        if (sandbox.instance == null) sandbox.loadInstance()
+                        if (sandbox.instance == null) return@addListener player.kick(MessageUtils.err("An error occurred while teleporting to your sandbox."))
+
+                        event.spawningInstance = sandbox.instance
+                    }
+
+                    MinecraftServer.getGlobalEventHandler().addListener(PlayerSpawnEvent::class.java) {
+                        PlaygroundCommand.goto(it.player, sandboxes.firstOrNull() ?: return@addListener)
+                    }
+                }
+            }
             progress(0.33)
             Loading.start("Registering Commands") {
                 PlaygroundCommand.register()
@@ -95,7 +128,7 @@ object Playground : OrionServer() {
                         .build()
 
                     message("Loading Sandboxes from MongoDB...", 0.75)
-                    loadSandboxes()
+                    loadSandboxes(sandboxes)
 
                     message("MongoDB and Ambrosia initialized successfully!", 1.0)
                 }
@@ -121,6 +154,7 @@ object Playground : OrionServer() {
 }
 
 
-fun main() {
-    Playground.bind()
+fun main(args: Array<String>) {
+    val pg = Playground(args.toMutableList())
+    pg.bind()
 }

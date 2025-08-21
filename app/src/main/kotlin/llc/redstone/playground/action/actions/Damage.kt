@@ -26,7 +26,7 @@ data class Damage(
     Material.DIAMOND_SWORD
 ) {
     override suspend fun execute(
-        entity: Entity,
+        entity: Entity?,
         player: Player?,
         sandbox: Sandbox,
         event: Event?,

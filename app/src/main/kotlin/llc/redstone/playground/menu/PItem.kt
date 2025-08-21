@@ -37,7 +37,7 @@ class PItem(material: Material = Material.AIR, var builder: ItemStack = ItemStac
        Formatted as:
        <bold><success> <emoji> <line></success></bold>
     */
-    var data = mutableMapOf<String, Pair<String, TextColor?>>()
+    var data = mutableListOf<Triple<String, String, TextColor?>>()
 
     // Blank line
     // Click actions
@@ -59,7 +59,7 @@ class PItem(material: Material = Material.AIR, var builder: ItemStack = ItemStac
     }
 
     fun data(emoji: String, line: String, color: TextColor?): PItem {
-        data[emoji] = Pair(line, color)
+        data.add(Triple(emoji, line, color))
         return this
     }
 
@@ -120,8 +120,8 @@ class PItem(material: Material = Material.AIR, var builder: ItemStack = ItemStac
         if (info != null) {
             longestLine = info!!.length
         }
-        data.forEach { (emoji, pair) ->
-            val lineLength = emoji.length + pair.first.length + 2
+        data.forEach { triple ->
+            val lineLength = triple.first.length + triple.second.length + 2
             longestLine = maxOf(longestLine, lineLength)
         }
         click.forEach { (_, pair) ->
@@ -162,9 +162,9 @@ class PItem(material: Material = Material.AIR, var builder: ItemStack = ItemStac
         }
         if (data.isNotEmpty()) {
             lore.add(Component.empty())
-            data.forEach { (emoji, pair) ->
-                val color = (pair.second ?: successColor)!!.asHexString()
-                lore.add(colorize("<${color}><bold> $emoji </bold>${pair.first}</${color}>"))
+            data.forEach { triple ->
+                val color = (triple.third ?: successColor)!!.asHexString()
+                lore.add(colorize("<${color}><bold> ${triple.first} </bold>${triple.second}</${color}>"))
             }
         }
         if (click.isNotEmpty()) {

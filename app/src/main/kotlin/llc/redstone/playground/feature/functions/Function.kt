@@ -7,12 +7,17 @@ import com.ezylang.evalex.parser.Token
 import net.minestom.server.item.Material
 import llc.redstone.playground.action.Action
 import llc.redstone.playground.action.ActionExecutor
+import llc.redstone.playground.action.ActionExecutor.ActionScope.ENTITY
+import llc.redstone.playground.action.ActionExecutor.ActionScope.PLAYER
+import llc.redstone.playground.action.ActionExecutor.ActionScope.SANDBOX
 import llc.redstone.playground.feature.evalex.AbstractFunction
 import llc.redstone.playground.feature.evalex.PGExpression
 import llc.redstone.playground.menu.PItem
+import llc.redstone.playground.utils.toTitleCase
 
 class Function(
-    var name: String = "",
+    var name: String,
+    var scope: ActionExecutor.ActionScope,
     var description: String = "",
     icon: Material = Material.MAP,
     var actions: MutableList<Action> = mutableListOf(),
@@ -22,15 +27,23 @@ class Function(
     var arguments: MutableList<FunctionParameterDefinition> = arguments.map {
         it.build()
     }.toMutableList()
-    @Transient val evalFunction = EvalFunction(this.arguments, this)
+    @Transient
+    val evalFunction = EvalFunction(this.arguments, this)
 
     fun createDisplayItem(): PItem {
         return PItem(Material.fromKey(icon) ?: Material.MAP)
-            .name("<green>$name")
+            .name(
+                when (scope) {
+                    SANDBOX -> "<green>"
+                    ENTITY -> "<blue>"
+                    PLAYER -> "<aqua>"
+                } + name.toTitleCase()
+            )
+            .info(scope.name.toTitleCase() + " Function")
             .description(description)
             .data("Actions", "${actions.size} actions", null)
             .data("", "", null)
-            .data("<yellow>Variables", "", null)
+            .data("<yellow>Arguments", "", null)
             .apply {
                 arguments.forEach {
                     this.data("", "<gray>${it.name}", null)
@@ -49,6 +62,7 @@ class Function(
             expression.player,
             expression.sandbox,
             event,
+            scope,
             actions,
         ).execute {
             PGExpression(it, expression.entity, expression.player, expression.sandbox, event).withValues(

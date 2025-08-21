@@ -2,7 +2,6 @@
 
 package llc.redstone.playground.utils
 
-import com.catppuccin.Palette
 import kotlin.math.*
 import java.awt.*
 import java.awt.image.BufferedImage
@@ -38,7 +37,7 @@ fun rgbToHsl(rgb: RGB): HSL {
         d == 0.0 -> 0.0
         max == r -> ((g - b) / d + (if (g < b) 6 else 0)) / 6.0
         max == g -> ((b - r) / d + 2) / 6.0
-        else     -> ((r - g) / d + 4) / 6.0
+        else -> ((r - g) / d + 4) / 6.0
     }
     return HSL(h, s, l)
 }
@@ -97,11 +96,11 @@ fun makePalette(hex: String): List<String> {
 }
 
 fun drawPalettePng(
-    colors: List<Pair<com.catppuccin.Pair<String, com.catppuccin.Color>, List<String>>>,
+    palettes: List<List<Pair<com.catppuccin.Pair<String, com.catppuccin.Color>, List<String>>>>,
     file: File = File("LATTE.png")
 ) {
-    val height = 18 * colors.size + 2 // 16px per color w/ padding + 2px for top/bottom border
-    val width = 90
+    val height = 18 * palettes.first().size + 2 // 16px per color w/ padding + 2px for top/bottom border
+    val width = 150
     val img = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
     val g = img.createGraphics()
 
@@ -109,34 +108,43 @@ fun drawPalettePng(
     g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
     g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
 
-    var y = 1
-    colors.forEach { (pair, colors) ->
-        val width = 16
-        val height = 16
-        val inputHex = pair.value().hex()
-        val colorName = pair.key()
+    var x = 1
+    palettes.forEach { colors ->
+        var y = 1
+        colors.forEach { (pair, colors) ->
+            val width = 16
+            val height = 16
+            val inputHex = pair.value().hex()
 
-        // Draw the color name text
-        g.color = Color.WHITE
-        g.drawString(colorName, 18, y + 12)
+            // Background is inputHex
+            g.color = Color.decode("#$inputHex")
+            g.fillRect(x, y, width, height)
 
-        // Background is inputHex
-        g.color = Color.decode("#$inputHex")
-        g.fillRect(1, y, width, height)
+            // Out-most border is color index 1
+            g.color = Color.decode("#${colors[1]}")
+            g.drawRect(x, y, width - 1, height - 1)
 
-        // Out-most border is color index 1
-        g.color = Color.decode("#${colors[1]}")
-        g.drawRect(1, y, width - 1, height - 1)
-
-        //Starting at 1,1 draw an outline that is 14x13
-        g.color = Color.decode("#${colors[0]}")
-        g.drawRect(2, y + 1, width - 3, height - 4)
+            //Starting at 1,1 draw an outline that is 14x13
+            g.color = Color.decode("#${colors[0]}")
+            g.drawRect(x + 1, y + 1, width - 3, height - 4)
 
 //    //Draw a line from 1,14 to 14,14 in color index 2
-        g.color = Color.decode("#${colors[2]}")
-        g.drawLine(2, y + 14, width - 1, y + 14)
+            g.color = Color.decode("#${colors[2]}")
+            g.drawLine(x + 1, y + 14, x + 14, y + 14)
 
-        y += 18
+            y += 18
+        }
+
+        x += 17
+    }
+
+    // Names for each palette
+    g.color = Color.WHITE
+    palettes.first().forEachIndexed { i, pair ->
+        val name = pair.first.key()
+
+        // Draw the name text
+        g.drawString(name, 15 + palettes.size * 17, i * 18 + 14)
     }
 
 
@@ -146,23 +154,24 @@ fun drawPalettePng(
 
 fun main() {
 
-    val test = Palette.LATTE.toList()!!.map { pair ->
-        val key = pair.key()
-        val value = pair.value()
+    val palettes = catppuccinPalettes.map {
+        it.toList()!!.map { pair ->
+            val key = pair.key()
+            val value = pair.value()
 
-        val pal = makePalette(value.hex())
-//        println("hex: ${value.hex()} -> $pal")
-        Pair(pair, pal)
+            val pal = makePalette(value.hex())
+            Pair(pair, pal)
+        }
     }
 
     drawPalettePng(
-        test,
+        palettes,
         File("LATTE.png")
     )
 
     return
 
-    val input = readLine()?: return
+    val input = readLine() ?: return
     val palette = makePalette(input)
 
 

@@ -4,6 +4,7 @@ import net.minestom.server.entity.Player
 import net.minestom.server.item.Material
 import llc.redstone.playground.feature.events.EventActionsMenu
 import llc.redstone.playground.feature.functions.FunctionsMenu
+import llc.redstone.playground.feature.schedules.SchedulesMenu
 import llc.redstone.playground.menu.PItem
 import llc.redstone.playground.menu.items.BackItem
 import llc.redstone.playground.utils.colorize
@@ -17,7 +18,7 @@ class SystemsMenu : NormalMenu(
         return Gui.normal()
             .setStructure(
                 "# # # # # # # # #",
-                "# e f # # # # # #",
+                "# e f s # # # # #",
                 "# # # # # # # # #",
                 "# # # # b # # # #",
             )
@@ -35,6 +36,14 @@ class SystemsMenu : NormalMenu(
                     .name("<green>Functions Menu")
                     .leftClick("edit") { _, _ ->
                         FunctionsMenu().open(player)
+                        null
+                    }.buildItem()
+            )
+            .addIngredient(
+                's', PItem(Material.REPEATING_COMMAND_BLOCK)
+                    .name("<green>Schedules Menu")
+                    .leftClick("edit") { _, _ ->
+                        SchedulesMenu().open(player)
                         null
                     }.buildItem()
             )

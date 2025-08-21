@@ -44,6 +44,7 @@ fun convertCatppuccinPalette(
 
     // Build a mapping from fromPalette RGB to toPalette RGB
     val colorMap = fromColors.keys.associate { name ->
+        println("Mapping color $name: ${fromColors[name]} -> ${toColors[name]}")
         val fromRgb = Color.decode(fromColors[name])
         val toRgb = Color.decode(toColors[name])
         fromRgb.rgb to toRgb.rgb
@@ -53,6 +54,7 @@ fun convertCatppuccinPalette(
     for ((key, value) in map) {
         val keyColors = makePalette(key.hexString())
         val valueColors = makePalette(value.hexString())
+        println("$keyColors -> $valueColors")
         for ((i, keyColor) in keyColors.withIndex()) {
             colorMap.put(hex(keyColor).rgb, hex(valueColors[i]).rgb)
         }

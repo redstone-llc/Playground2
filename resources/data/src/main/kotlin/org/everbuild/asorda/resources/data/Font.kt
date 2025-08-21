@@ -20,7 +20,7 @@ import team.unnamed.creative.font.FontProvider
 suspend fun addFontData(pack: ResourcePack, metadata: ResourcePackMetadata) {
     val codepointTrack = Track.char('\ue000')
 
-    val spacing = createSpacingProvider(-160..160, codepointTrack, metadata)
+    val spacing = createSpacingProvider(-260..160, codepointTrack, metadata)
 
     val elements = listOf(
         spacing,
