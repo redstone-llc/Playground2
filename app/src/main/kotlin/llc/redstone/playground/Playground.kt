@@ -16,25 +16,33 @@ import llc.redstone.playground.commands.PlaygroundCommand
 import llc.redstone.playground.managers.loadInstance
 import llc.redstone.playground.managers.loadSandboxes
 import llc.redstone.playground.managers.loadedSandboxes
-import llc.redstone.playground.utils.ActionTypeAdapter
-import llc.redstone.playground.utils.EntityTypeTypeAdapter
-import llc.redstone.playground.utils.MessageUtils
-import llc.redstone.playground.utils.err
-import llc.redstone.playground.utils.initMinecraftServer
+import llc.redstone.playground.utils.*
 import llc.redstone.playground.utils.logging.Loading
-import llc.redstone.playground.utils.logging.Logger
-import llc.redstone.playground.utils.setInstanceSafe
 import me.lucko.spark.minestom.SparkMinestom
+import net.kyori.adventure.nbt.CompoundBinaryTag
+import net.kyori.adventure.nbt.StringBinaryTag
 import net.minestom.server.MinecraftServer
-import net.minestom.server.coordinate.Pos
+import net.minestom.server.advancements.AdvancementRoot
+import net.minestom.server.advancements.AdvancementTab
+import net.minestom.server.advancements.FrameType
+import net.minestom.server.dialog.Dialog
+import net.minestom.server.dialog.DialogAfterAction
+import net.minestom.server.dialog.DialogBody
+import net.minestom.server.dialog.DialogMetadata
 import net.minestom.server.entity.EntityType
 import net.minestom.server.entity.Player
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent
 import net.minestom.server.event.player.PlayerSpawnEvent
-import net.minestom.server.extras.MojangAuth
-import net.sinender.lobby.LOBBY_INSTANCE
+import net.minestom.server.item.Material
+import net.minestom.server.network.packet.server.common.ShowDialogPacket
+import net.minestom.server.network.packet.server.common.TagsPacket
+import net.minestom.server.network.packet.server.configuration.RegistryDataPacket
+import net.minestom.server.network.packet.server.configuration.RegistryDataPacket.Entry
+import net.minestom.server.registry.Registries
+import net.minestom.server.registry.RegistryKey
 import net.sinender.lobby.createLobbyInstance
 import org.bson.UuidRepresentation
+import org.everbuild.asorda.resources.data.items.GlobalIcons
 import org.everbuild.blocksandstuff.blocks.BlockBehaviorRuleRegistrations
 import org.everbuild.blocksandstuff.blocks.BlockPlacementRuleRegistrations
 import org.everbuild.blocksandstuff.blocks.PlacedHandlerRegistration
@@ -51,10 +59,16 @@ class Playground(
     companion object {
         lateinit var mongoAmbrosia: MongoAmbrosia
         lateinit var gson: Gson
+        lateinit var tab: AdvancementTab
     }
 
     init {
-        Loading.start("Pre-Initializing Playground") { initMinecraftServer(server); message("Pre-Initialized Playground", 1.0) }
+        Loading.start("Pre-Initializing Playground") {
+            initMinecraftServer(server); message(
+            "Pre-Initialized Playground",
+            1.0
+        )
+        }
 
         Loading.start("Playground Startup") {
             progress(0.0)
@@ -64,19 +78,39 @@ class Playground(
                 } else {
                     // If only one sandbox is specified, we can skip creating a lobby instance
                     message("Skipping lobby instance creation, single sandbox mode", 1.0)
-                    MinecraftServer.getGlobalEventHandler().addListener(AsyncPlayerConfigurationEvent::class.java) { event ->
-                        val player = event.player
-                        val uuid = sandboxes.firstOrNull() ?: return@addListener
-                        val sandbox = loadedSandboxes[uuid] ?: return@addListener player.kick(MessageUtils.err("Sandbox with UUID $uuid not found."))
-                        if (sandbox.instance == null) sandbox.loadInstance()
-                        if (sandbox.instance == null) return@addListener player.kick(MessageUtils.err("An error occurred while teleporting to your sandbox."))
+                    MinecraftServer.getGlobalEventHandler()
+                        .addListener(AsyncPlayerConfigurationEvent::class.java) { event ->
+                            val player = event.player
 
-                        event.spawningInstance = sandbox.instance
-                    }
+                            val uuid = sandboxes.firstOrNull() ?: return@addListener
+                            val sandbox = loadedSandboxes[uuid]
+                                ?: return@addListener player.kick(MessageUtils.err("Sandbox with UUID $uuid not found."))
+                            if (sandbox.instance == null) sandbox.loadInstance()
+                            if (sandbox.instance == null) return@addListener player.kick(MessageUtils.err("An error occurred while teleporting to your sandbox."))
+
+                            event.spawningInstance = sandbox.instance
+                        }
 
                     MinecraftServer.getGlobalEventHandler().addListener(PlayerSpawnEvent::class.java) {
                         PlaygroundCommand.goto(it.player, sandboxes.firstOrNull() ?: return@addListener)
+                        tab.addViewer(it.player)
                     }
+                }
+                Loading.start("Registering tab for advancements") {
+                    tab = MinecraftServer.getAdvancementManager().createTab(
+                        "test",
+                        AdvancementRoot(
+                            colorize(""),
+                            colorize(""),
+                            GlobalIcons.empty.item(),
+                            FrameType.TASK,
+                            10f,
+                            10f,
+                            "minecraft:gui/sprites/container/slot_highlight_back"
+                        ).apply {
+                            setHidden(true)
+                        }
+                    )
                 }
             }
             progress(0.33)
@@ -148,7 +182,11 @@ class Playground(
         }
 
         Loading.start("Hashing resource packs...") {
-            withResourcePacksInDev()
+            try {
+                withResourcePacksInDev()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 }

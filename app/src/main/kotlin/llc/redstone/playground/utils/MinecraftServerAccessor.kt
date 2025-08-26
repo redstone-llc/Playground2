@@ -3,7 +3,6 @@ package llc.redstone.playground.utils
 import com.github.shynixn.mccoroutine.minestom.addSuspendingListener
 import kotlinx.coroutines.asCoroutineDispatcher
 import llc.redstone.playground.managers.saveAllSandboxes
-import llc.redstone.playground.menu.DefaultItems
 import llc.redstone.playground.utils.logging.Logger
 import net.minestom.server.MinecraftServer
 import net.minestom.server.event.Event

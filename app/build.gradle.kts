@@ -17,13 +17,21 @@ dependencies {
     implementation(libs.bundles.luckperms)
     implementation(libs.minestom)
     implementation(libs.spark)
-    implementation("dev.hollowcube:schem:2.0")
+    implementation("dev.hollowcube:schem:2.0") {
+        exclude(group = "net.minestom", module = "minestom-snapshots")
+    }
     implementation("org.joml:joml:1.10.8")
     implementation("net.worldseed.multipart:WorldSeedEntityEngine:11.4.2")
 
-    implementation("org.everbuild.blocksandstuff:blocksandstuff-common:1.2.0-SNAPSHOT")
-    implementation("org.everbuild.blocksandstuff:blocksandstuff-blocks:1.2.0-SNAPSHOT")
-    implementation("org.everbuild.blocksandstuff:blocksandstuff-fluids:1.2.0-SNAPSHOT")
+    implementation("org.everbuild.blocksandstuff:blocksandstuff-common:1.2.0-SNAPSHOT") {
+        exclude(group = "net.minestom", module = "minestom-snapshots")
+    }
+    implementation("org.everbuild.blocksandstuff:blocksandstuff-blocks:1.2.0-SNAPSHOT") {
+        exclude(group = "net.minestom", module = "minestom-snapshots")
+    }
+    implementation("org.everbuild.blocksandstuff:blocksandstuff-fluids:1.2.0-SNAPSHOT") {
+        exclude(group = "net.minestom", module = "minestom-snapshots")
+    }
 
     implementation(libs.ambrosia)
     implementation(libs.mongodb)
@@ -33,14 +41,18 @@ dependencies {
     implementation(libs.mccoroutineMinestomApi)
     implementation(libs.mccoroutineMinestomCore)
 
-    implementation("xyz.xenondevs.invui:invui-kotlin:1.49")
+    implementation("xyz.xenondevs.invui:invui-kotlin:1.49") {
+        exclude(group = "net.minestom", module = "minestom-snapshots")
+    }
     implementation(libs.evalEx)
 
     implementation("com.github.ben-manes.caffeine:caffeine:3.2.1")
     implementation("com.catppuccin:catppuccin-palette:${libs.versions.catppuccin.get()}")
     implementation(libs.polar)
 
-    implementation(libs.minestomPVP)
+    implementation(libs.minestomPVP) {
+        exclude(group = "net.minestom", module = "minestom")
+    }
 }
 
 application {

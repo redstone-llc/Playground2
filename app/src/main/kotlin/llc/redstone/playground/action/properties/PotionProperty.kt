@@ -3,7 +3,6 @@ package llc.redstone.playground.action.properties
 import net.minestom.server.component.DataComponents
 import llc.redstone.playground.utils.PaginationList
 import llc.redstone.playground.action.ActionProperty
-import llc.redstone.playground.menu.MenuItem
 import llc.redstone.playground.menu.PaginationMenu
 import net.minestom.server.entity.Player
 import net.minestom.server.event.inventory.InventoryPreClickEvent
@@ -14,8 +13,11 @@ import net.minestom.server.item.Material
 import net.minestom.server.item.component.PotionContents
 import net.minestom.server.potion.PotionEffect
 import net.minestom.server.potion.PotionType
-import llc.redstone.playground.menu.Menu
+
 import llc.redstone.playground.database.Sandbox
+import llc.redstone.playground.menu.PItem
+import llc.redstone.playground.menu.invui.AbstractMenu
+import net.minestom.server.inventory.click.Click
 import java.lang.reflect.Field
 
 class PotionProperty: ActionProperty<PotionEffect>(
@@ -24,26 +26,26 @@ class PotionProperty: ActionProperty<PotionEffect>(
     override fun runnable(
         field: Field,
         obj: Any,
-        event: InventoryPreClickEvent,
+        event: Click,
         sandbox: Sandbox,
         player: Player,
-        menu: Menu
+        menu: AbstractMenu
     ) {
-        val menu = object: PaginationMenu("Select Potion") {
-            override fun paginationList(player: Player): PaginationList<MenuItem> {
-                val menuItems = ArrayList<MenuItem>()
+        val menu = object: PaginationMenu("Select Potion", menu) {
+            override fun list(player: Player): MutableList<PItem> {
+                val menuItems = ArrayList<PItem>()
                 for (effect in PotionEffect.values()) {
-                    val builder = MenuItem(ItemStack.of(Material.POTION)
+                    val builder = PItem(ItemStack.of(Material.POTION)
                         .with(DataComponents.POTION_CONTENTS, PotionContents(PotionType.fromKey(effect.name())?: PotionType.WATER))
-                    ) {
-                        if (event.click is Left) value(obj, field, effect)
+                    )
+                    builder.name("<yellow>${effect.name()}")
+                    builder.leftClick("add") {
+                        value(obj, field, effect)
                         menu.open(player)
                     }
-                    builder.name("<yellow>${effect.name()}")
-                    builder.action(ClickType.LEFT_CLICK, "to add")
                     menuItems.add(builder)
                 }
-                return PaginationList(menuItems, slots.size)
+                return menuItems
             }
         }
 

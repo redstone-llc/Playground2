@@ -6,8 +6,8 @@ import net.minestom.server.entity.Player
 import llc.redstone.playground.managers.getSandbox
 import llc.redstone.playground.menu.PItem
 import llc.redstone.playground.menu.items.BackItem
-import llc.redstone.playground.menu.items.ForwardItem
-import llc.redstone.playground.menu.items.ReverseItem
+import llc.redstone.playground.menu.items.NextItem
+import llc.redstone.playground.menu.items.PreviousItem
 import llc.redstone.playground.menu.menus.ConfirmMenu
 import llc.redstone.playground.menu.menus.MaterialSelector
 import llc.redstone.playground.utils.VariableUtils.toBuilder
@@ -181,8 +181,8 @@ class FunctionEditorMenu(
                 function.createDisplayItem().build()
             )
             .addIngredient('x', Markers.CONTENT_LIST_SLOT_HORIZONTAL)
-            .addIngredient('p', ReverseItem())
-            .addIngredient('n', ForwardItem())
+            .addIngredient('p', PreviousItem())
+            .addIngredient('n', NextItem())
             .setContent(functionArgumentsTabContent(player))
             .addIngredient(
                 'N', PItem(GlobalIcons.empty.item())

@@ -19,8 +19,6 @@ import llc.redstone.playground.action.*
 import llc.redstone.playground.action.properties.BooleanPropertyAnnotation
 import llc.redstone.playground.feature.npc.events.NpcEventType
 import llc.redstone.playground.feature.npc.menu.NpcEditMenu
-import llc.redstone.playground.menu.MenuItem
-import llc.redstone.playground.menu.menuItem
 import llc.redstone.playground.database.Sandbox
 import llc.redstone.playground.menu.PItem
 import llc.redstone.playground.utils.susListener

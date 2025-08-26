@@ -7,9 +7,11 @@ import llc.redstone.playground.action.Action
 import llc.redstone.playground.action.displayName
 import llc.redstone.playground.feature.evalex.PGExpression
 import llc.redstone.playground.feature.evalex.styleExpression
-import llc.redstone.playground.menu.Menu
+
 import llc.redstone.playground.database.Sandbox
+import llc.redstone.playground.menu.invui.AbstractMenu
 import llc.redstone.playground.utils.openChat
+import net.minestom.server.inventory.click.Click
 import java.lang.reflect.Field
 
 class NumberProperty : ActionProperty<String>(
@@ -19,7 +21,14 @@ class NumberProperty : ActionProperty<String>(
         return value?.styleExpression()
     }
 
-    override fun runnable(field: Field, obj: Any, event: InventoryPreClickEvent, sandbox: Sandbox, player: Player, menu: Menu) {
+    override fun runnable(
+        field: Field,
+        obj: Any,
+        event: Click,
+        sandbox: Sandbox,
+        player: Player,
+        menu: AbstractMenu
+    ) {
         player.openChat(value(obj, field).toString(), field.displayName()) { message ->
 //            PGExpression(message, player, player, sandbox, null).
 //            if (field.getAnnotation(ExpressionPropertyAnnotation::class.java).isNumber) {

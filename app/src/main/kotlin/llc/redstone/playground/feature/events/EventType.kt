@@ -1,8 +1,6 @@
 package llc.redstone.playground.feature.events
 
-import llc.redstone.playground.menu.MenuItem
 import llc.redstone.playground.menu.PItem
-import llc.redstone.playground.menu.menuItem
 import net.minestom.server.event.player.PlayerBlockBreakEvent
 import net.minestom.server.event.player.PlayerEntityInteractEvent
 import net.minestom.server.event.trait.PlayerEvent

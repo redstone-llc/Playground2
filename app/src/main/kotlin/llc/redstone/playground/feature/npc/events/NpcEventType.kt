@@ -1,9 +1,7 @@
 package llc.redstone.playground.feature.npc.events
 
 import io.github.togar2.pvp.events.PrepareAttackEvent
-import llc.redstone.playground.menu.MenuItem
 import llc.redstone.playground.menu.PItem
-import llc.redstone.playground.menu.menuItem
 import net.minestom.server.event.player.PlayerEntityInteractEvent
 import net.minestom.server.event.trait.EntityEvent
 import net.minestom.server.inventory.click.ClickType

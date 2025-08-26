@@ -6,20 +6,27 @@ import llc.redstone.playground.database.SandboxInstanceManager
 import llc.redstone.playground.database.SandboxManager
 import llc.redstone.playground.database.migrateSandbox
 import llc.redstone.playground.feature.events.EventType
+import llc.redstone.playground.feature.housingMenu.PlaygroundMenu
 import llc.redstone.playground.sandbox.createTemplatePlatform
+import llc.redstone.playground.utils.success
 import net.hollowcube.polar.*
 import net.minestom.server.MinecraftServer
+import net.minestom.server.advancements.AdvancementAction
 import net.minestom.server.coordinate.Pos
 import net.minestom.server.entity.Player
 import net.minestom.server.event.EventFilter
 import net.minestom.server.event.EventNode
 import net.minestom.server.event.player.PlayerEntityInteractEvent
+import net.minestom.server.event.player.PlayerPacketEvent
+import net.minestom.server.event.player.PlayerPacketOutEvent
 import net.minestom.server.event.player.PlayerPickBlockEvent
 import net.minestom.server.event.player.PlayerRespawnEvent
 import net.minestom.server.event.trait.PlayerEvent
 import net.minestom.server.instance.IChunkLoader
 import net.minestom.server.instance.InstanceContainer
 import net.minestom.server.instance.LightingChunk
+import net.minestom.server.network.ConnectionState
+import net.minestom.server.network.packet.client.play.ClientAdvancementTabPacket
 import java.nio.file.Path
 import java.util.*
 
@@ -66,6 +73,9 @@ fun createSandbox(player: Player): Sandbox {
 fun Sandbox.loadInstance() {
     val sbInstance = SandboxInstanceManager.loadSandbox(this.sandboxUUID) ?: return
     this.instance = createInstance(PolarLoader(PolarReader.read(sbInstance.instanceArray)))
+
+    this.commands.forEach { it.registerCommand(this) }
+    this.schedules.forEach { it.createScheduleTask(this) }
 }
 
 fun createInstance(chunkLoader: IChunkLoader): InstanceContainer {
@@ -111,6 +121,13 @@ fun Sandbox.startEventListener() {
     }
     node.addListener(PlayerPickBlockEvent::class.java) {
         handlePickBlock(it)
+    }
+    node.addListener(PlayerPacketEvent::class.java) { e ->
+        val packet = e.packet
+        if (packet !is ClientAdvancementTabPacket) {
+            return@addListener
+        }
+        if (packet.action == AdvancementAction.OPENED_TAB) PlaygroundMenu().open(e.player)
     }
 }
 

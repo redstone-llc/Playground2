@@ -1,23 +1,16 @@
 package llc.redstone.playground.feature.events
 
 import feature.actionMenu.ActionsMenu
-import llc.redstone.playground.action.Action
 import llc.redstone.playground.database.Sandbox
-import llc.redstone.playground.feature.actionMenu.ActionEditMenu
 import llc.redstone.playground.feature.housingMenu.SystemsMenu
 import llc.redstone.playground.managers.getSandbox
-import llc.redstone.playground.menu.*
-import llc.redstone.playground.menu.invui.AbstractMenu
 import llc.redstone.playground.menu.invui.AnvilMenu
 import llc.redstone.playground.menu.items.BackItem
-import llc.redstone.playground.menu.items.ForwardItem
-import llc.redstone.playground.menu.items.ReverseItem
+import llc.redstone.playground.menu.items.NextItem
+import llc.redstone.playground.menu.items.PreviousItem
 import net.minestom.server.entity.Player
-import net.minestom.server.inventory.InventoryType
-import llc.redstone.playground.utils.PaginationList
 import llc.redstone.playground.utils.colorize
 import llc.redstone.playground.utils.err
-import net.minestom.server.inventory.click.Click
 import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.gui.PagedGui
 import xyz.xenondevs.invui.gui.structure.Markers
@@ -50,8 +43,8 @@ class EventActionsMenu() : AnvilMenu(
                 "< # # # b # # # >"
             )
             .addIngredient('x', Markers.CONTENT_LIST_SLOT_HORIZONTAL) // where paged items should be put
-            .addIngredient('<', ReverseItem())
-            .addIngredient('>', ForwardItem())
+            .addIngredient('<', PreviousItem())
+            .addIngredient('>', NextItem())
             .addIngredient('b', BackItem(SystemsMenu()))
             .setContent(content(player, sandbox))
             .build()

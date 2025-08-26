@@ -30,7 +30,7 @@ import xyz.xenondevs.invui.item.Item
 open class ActionsMenu(
     val actions: MutableList<Action>,
     val backMenu: AbstractMenu? = null,
-    title: Component = MenuCharacters.actionsBase.component(-9).append(MenuCharacters.actionLibrary.component(-16)),
+    title: Component = MenuCharacters.actionsBase.component(-10).append(MenuCharacters.actionLibrary.component(-181)),
     displayName: Component = colorize("<green>Actions Menu")
 ) : NormalMenu(title, displayName) {
     var category: ActionCategory = ActionCategory.ALL

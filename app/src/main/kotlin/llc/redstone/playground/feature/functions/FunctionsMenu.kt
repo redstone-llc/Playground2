@@ -10,8 +10,8 @@ import llc.redstone.playground.managers.getSandbox
 import llc.redstone.playground.menu.*
 import llc.redstone.playground.menu.invui.AnvilMenu
 import llc.redstone.playground.menu.items.BackItem
-import llc.redstone.playground.menu.items.ForwardItem
-import llc.redstone.playground.menu.items.ReverseItem
+import llc.redstone.playground.menu.items.NextItem
+import llc.redstone.playground.menu.items.PreviousItem
 import llc.redstone.playground.utils.colorize
 import llc.redstone.playground.utils.component
 import llc.redstone.playground.utils.err
@@ -52,8 +52,8 @@ class FunctionsMenu : AnvilMenu(
                 "< # # f b a # # >"
             )
             .addIngredient('x', Markers.CONTENT_LIST_SLOT_HORIZONTAL) // where paged items should be put
-            .addIngredient('<', ReverseItem())
-            .addIngredient('>', ForwardItem())
+            .addIngredient('<', PreviousItem())
+            .addIngredient('>', NextItem())
             .addIngredient('b', BackItem(SystemsMenu(), "Systems Menu"))
 //            .addIngredient('f') TODO: cycle items
             .addIngredient(

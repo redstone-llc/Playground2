@@ -4,6 +4,11 @@ import org.everbuild.asorda.resources.data.api.ContentList
 import org.everbuild.asorda.resources.data.api.texture.Texture
 
 object MenuCharacters : ContentList() {
+    val playgroundMenu = createBitmapCharacter("playground_menu") {
+        texture(Texture("font/menu/playground_menu"))
+        height(256)
+        ascent(48)
+    }
     val functionSearchMenu = createBitmapCharacter("function_search_menu") {
         texture(Texture("font/menu/function_search_menu"))
         height(256)
@@ -46,6 +51,36 @@ object MenuCharacters : ContentList() {
         ascent(16)
     }
 
+    val commandEditorActions = createBitmapCharacter("command_editor_actions") {
+        texture(Texture("font/menu/command_editor_actions"))
+        height(256)
+        ascent(16)
+    }
+
+    val commandArgumentProperties = createBitmapCharacter("command_argument_properties") {
+        texture(Texture("font/menu/command_argument_properties"))
+        height(256)
+        ascent(16)
+    }
+
+    val commandEditorActionsSettings = createBitmapCharacter("command_editor_actions_settings") {
+        texture(Texture("font/menu/command_editor_actions_settings"))
+        height(256)
+        ascent(16)
+    }
+
+    val commandEditorSettings = createBitmapCharacter("command_editor_settings") {
+        texture(Texture("font/menu/command_editor_settings"))
+        height(256)
+        ascent(16)
+    }
+
+    val commandEditorArguments = createBitmapCharacter("command_editor_arguments") {
+        texture(Texture("font/menu/command_editor_arguments"))
+        height(256)
+        ascent(16)
+    }
+    
     val scheduleEditorActions = createBitmapCharacter("schedule_editor_actions") {
         texture(Texture("font/menu/schedule_editor_actions"))
         height(256)

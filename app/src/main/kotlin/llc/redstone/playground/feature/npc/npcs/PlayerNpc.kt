@@ -16,7 +16,6 @@ import llc.redstone.playground.action.Description
 import llc.redstone.playground.action.DisplayName
 import llc.redstone.playground.action.properties.StringPropertyAnnotation
 import llc.redstone.playground.feature.npc.NpcEntity
-import llc.redstone.playground.menu.MenuItem
 import llc.redstone.playground.database.Sandbox
 import llc.redstone.playground.menu.PItem
 import llc.redstone.playground.utils.PlaybackPlayer

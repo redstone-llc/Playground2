@@ -1,31 +1,25 @@
 package llc.redstone.playground.menu.menus
 
 import net.minestom.server.entity.Player
-import net.minestom.server.inventory.InventoryType
 import net.minestom.server.inventory.click.ClickType
 import net.minestom.server.item.Material
-import llc.redstone.playground.menu.Menu
-import llc.redstone.playground.menu.MenuItem
+import llc.redstone.playground.menu.PItem
 import llc.redstone.playground.menu.PaginationMenu
-import llc.redstone.playground.menu.invui.AbstractMenu
-import llc.redstone.playground.menu.menuItem
+import llc.redstone.playground.menu.invui.NormalMenu
 import llc.redstone.playground.utils.PaginationList
 
-class MaterialSelector(backMenu: AbstractMenu, val invoke: (Material) -> Unit): PaginationMenu(
+class MaterialSelector(backMenu: NormalMenu, val invoke: (Material) -> Unit) : PaginationMenu(
     "Material Selector",
-    InventoryType.CHEST_6_ROW
+    backMenu
 ) {
-    override fun paginationList(player: Player): PaginationList<MenuItem>? {
-        return PaginationList(
-            Material.values().map { material ->
-                menuItem(material) {
-                    invoke(material)
-                    player.sendMessage("Selected material: ${material.name()}")
-                }.name("<green>${material.name()}")
-                    .action(ClickType.LEFT_CLICK, "to select")
-            },
-            slots.size
-        )
+    override fun list(player: Player): MutableList<PItem> {
+        return Material.values().map { material ->
+                PItem(material).name("<green>${material.name()}")
+                    .leftClick("select") { e ->
+                        invoke(material)
+                        player.sendMessage("Selected material: ${material.name()}")
+                    }
+            }.toMutableList()
     }
 
 }

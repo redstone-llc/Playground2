@@ -4,6 +4,7 @@ import com.gestankbratwurst.ambrosia.impl.mongodb.collections.MongoMap
 import llc.redstone.playground.Playground
 import net.minestom.server.instance.InstanceContainer
 import llc.redstone.playground.action.Action
+import llc.redstone.playground.feature.commands.Command
 import llc.redstone.playground.feature.functions.Function
 import llc.redstone.playground.feature.npc.NpcEntity
 import llc.redstone.playground.feature.schedules.Schedule
@@ -69,6 +70,7 @@ data class Sandbox(
     var globalVariables: MutableMap<String, Any?> = mutableMapOf(),
     var functions: MutableList<Function> = mutableListOf(),
     var schedules: MutableList<Schedule> = mutableListOf(),
+    var commands: MutableList<Command> = mutableListOf(),
     var npcs: MutableList<NpcEntity> = mutableListOf(),
     ) {
     @Transient var instance: InstanceContainer? = null

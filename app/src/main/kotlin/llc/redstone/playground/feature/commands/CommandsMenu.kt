@@ -1,6 +1,5 @@
-package llc.redstone.playground.feature.schedules
+package llc.redstone.playground.feature.commands
 
-import llc.redstone.playground.action.ActionExecutor
 import net.minestom.server.entity.Player
 import llc.redstone.playground.database.Sandbox
 import llc.redstone.playground.feature.housingMenu.SystemsMenu
@@ -13,8 +12,8 @@ import llc.redstone.playground.menu.items.PreviousItem
 import llc.redstone.playground.utils.colorize
 import llc.redstone.playground.utils.component
 import llc.redstone.playground.utils.err
+import llc.redstone.playground.utils.error
 import llc.redstone.playground.utils.noError
-import llc.redstone.playground.utils.openMultiInput
 import llc.redstone.playground.utils.openTextInput
 import org.everbuild.asorda.resources.data.font.MenuCharacters
 import xyz.xenondevs.invui.gui.Gui
@@ -22,9 +21,9 @@ import xyz.xenondevs.invui.gui.PagedGui
 import xyz.xenondevs.invui.gui.structure.Markers
 import xyz.xenondevs.invui.item.Item
 
-class SchedulesMenu : AnvilMenu(
+class CommandsMenu : AnvilMenu(
     title = MenuCharacters.functionSearchMenu.component(-60),
-    displayName = colorize("<green>Schedules Menu")
+    displayName = colorize("<green>Commands Menu")
 ) {
     var search = ""
     override fun initAnvilGUI(player: Player): Gui {
@@ -35,6 +34,7 @@ class SchedulesMenu : AnvilMenu(
             .build()
     }
 
+    val regex = Regex("[a-z0-9_\\-.]")
     override fun initPlayerGUI(player: Player): Gui? {
         val sandbox = player.getSandbox() ?: run {
             player.err("You are not in a sandbox!")
@@ -55,37 +55,33 @@ class SchedulesMenu : AnvilMenu(
 //            .addIngredient('f') TODO: cycle items
             .addIngredient(
                 'a', PItem()
-                    .name("<green>Add Schedule")
+                    .name("<green>Add Command")
                     .description("")
                     .leftClick {
                         player.openTextInput() {
-                            title = "Set Schedule Name"
-                            message = "Enter the name of the new schedule:"
+                            title = "Set Command Name"
+                            message = "Enter the name of the new command:"
                             validator = { input ->
                                 if (input.isBlank()) {
-                                    error("Schedule name cannot be blank!")
+                                    error("Command name cannot be blank!")
                                 } else if (input.length > 32) {
-                                    error("Schedule name cannot be longer than 32 characters!")
+                                    error("Command name cannot be longer than 32 characters!")
+                                } else if (sandbox.commands.find { it.name == input } != null) {
+                                    error("A command with that name already exists!")
+                                } else if (regex.find(input) == null) {
+                                    error("Command name can only contain letters, numbers, and underscores!")
                                 } else {
                                     noError
                                 }
                             }
                             action = { name ->
-                                player.openMultiInput {
-                                    title = "Schedule Scope"
-                                    message = "Select the schedule scope that determines where this schedule can be used."
-                                    options = mutableListOf("player", "entity", "sandbox")
-                                    action = { scope ->
-                                        val scheduleScope = ActionExecutor.ActionScope.valueOf(scope.uppercase())
-                                        val newSchedule = Schedule(name, scheduleScope)
+                                val newCommand = Command(name)
 
-                                        sandbox.schedules.add(newSchedule)
+                                sandbox.commands.add(newCommand)
 
-                                        newSchedule.createScheduleTask(sandbox)
+                                newCommand.registerCommand(sandbox)
 
-                                        ScheduleEditorMenu(newSchedule).open(player)
-                                    }
-                                }
+                                CommandEditorMenu(newCommand).open(player)
                             }
                         }
                     }
@@ -95,10 +91,10 @@ class SchedulesMenu : AnvilMenu(
     }
 
     private fun content(player: Player, sandbox: Sandbox): List<Item> {
-        return sandbox.schedules.map { schedule ->
-            schedule.createDisplayItem()
+        return sandbox.commands.map { command ->
+            command.createDisplayItem()
                 .leftClick("edit") {
-                    ScheduleEditorMenu(schedule).open(player)
+                    CommandEditorMenu(command).open(player)
                 }
                 .buildItem()
         }

@@ -7,7 +7,6 @@ import kotlinx.coroutines.asExecutor
 import kotlinx.coroutines.invoke
 import kotlinx.coroutines.launch
 import net.minestom.server.entity.Entity
-import llc.redstone.playground.menu.MenuItem
 import net.minestom.server.entity.Player
 import net.minestom.server.event.Event
 import net.minestom.server.inventory.click.ClickType

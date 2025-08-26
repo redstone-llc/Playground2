@@ -6,16 +6,26 @@ import net.minestom.server.entity.Player
 import net.minestom.server.event.inventory.InventoryPreClickEvent
 import llc.redstone.playground.action.displayName
 import llc.redstone.playground.action.getFieldFromAnnotation
-import llc.redstone.playground.menu.Menu
+
 import llc.redstone.playground.database.Sandbox
+import llc.redstone.playground.menu.invui.AbstractMenu
+import llc.redstone.playground.menu.invui.NormalMenu
 import llc.redstone.playground.utils.err
 import llc.redstone.playground.utils.openChat
+import net.minestom.server.inventory.click.Click
 import java.lang.reflect.Field
 
 class DoubleProperty : ActionProperty<Double>(
     DoublePropertyAnnotation::class
 ) {
-    override fun runnable(field: Field, obj: Any, event: InventoryPreClickEvent, sandbox: Sandbox, player: Player, menu: Menu) {
+    override fun runnable(
+        field: Field,
+        obj: Any,
+        event: Click,
+        sandbox: Sandbox,
+        player: Player,
+        menu: AbstractMenu
+    ) {
         player.openChat(value(obj, field).toString(), field.displayName()) { message ->
             if (!message.isInteger()) {
                 player.err("The value provided is not a number.")

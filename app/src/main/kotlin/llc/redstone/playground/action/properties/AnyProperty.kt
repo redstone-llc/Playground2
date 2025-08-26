@@ -7,9 +7,11 @@ import llc.redstone.playground.action.Action
 import llc.redstone.playground.action.ActionProperty
 import llc.redstone.playground.action.displayName
 import llc.redstone.playground.feature.evalex.PGExpression
-import llc.redstone.playground.menu.Menu
 import llc.redstone.playground.database.Sandbox
+import llc.redstone.playground.menu.invui.AbstractMenu
+import llc.redstone.playground.menu.invui.NormalMenu
 import llc.redstone.playground.utils.openChat
+import net.minestom.server.inventory.click.Click
 import java.lang.reflect.Field
 
 class AnyProperty : ActionProperty<String>(
@@ -18,10 +20,10 @@ class AnyProperty : ActionProperty<String>(
     override fun runnable(
         field: Field,
         obj: Any,
-        event: InventoryPreClickEvent,
+        event: Click,
         sandbox: Sandbox,
         player: Player,
-        menu: Menu
+        menu: AbstractMenu
     ) {
         player.openChat(value(obj, field) ?: "", field.displayName()) { message ->
             value(obj, field, message, player)

@@ -50,7 +50,7 @@ NormalMenu(
         return title
     }
 
-    abstract fun initTopGUI(player: Player): Gui
+    abstract fun initTopGUI(player: Player): Gui?
     open fun initBottomGUI(player: Player): Gui? {
         return null
     }

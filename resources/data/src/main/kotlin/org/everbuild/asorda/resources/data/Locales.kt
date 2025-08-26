@@ -147,7 +147,9 @@ suspend fun addLocales(pack: ResourcePack) {
             Language.language(
                 minecraftKey(it),
                 mapOf(
-                    "container.inventory" to ""
+                    "container.inventory" to "",
+                    "gui.advancements" to "Playground",
+                    "key.advancements" to "Playground Menu"
                 )
             )
         )

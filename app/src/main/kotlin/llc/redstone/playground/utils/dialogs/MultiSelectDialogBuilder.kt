@@ -34,7 +34,7 @@ class MultiSelectDialogBuilder : DialogBuilder<String, Dialog.MultiAction>() {
             val value = key.removePrefix("playground:multi_select_")
             if (value in options) {
                 player.closeDialog()
-                action(value)
+                action(value.uppercase())
                 return true
             } else {
                 player.sendMessage(colorize("<error>Invalid option selected.</error>"))

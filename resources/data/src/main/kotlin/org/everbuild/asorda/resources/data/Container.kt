@@ -8,4 +8,6 @@ suspend fun addContainerUtils(pack: ResourcePack) {
     pack.texture(minecraftKey("gui/container/inventory.png"), resource("minecraft/container/inventory.png"))
     pack.texture(minecraftKey("gui/sprites/container/slot_highlight_back.png"), resource("minecraft/container/slot_highlight.png"))
     pack.texture(minecraftKey("gui/sprites/container/slot_highlight_front.png"), resource("minecraft/container/slot_highlight.png"))
+
+    pack.texture(minecraftKey("gui/advancements/window.png"), resource("minecraft/advancements/window.png"))
 }

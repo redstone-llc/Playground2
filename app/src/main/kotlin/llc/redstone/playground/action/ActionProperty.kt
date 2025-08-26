@@ -2,15 +2,14 @@ package llc.redstone.playground.action
 
 import com.catppuccin.Palette
 import net.minestom.server.entity.Player
-import net.minestom.server.event.inventory.InventoryPreClickEvent
-import net.minestom.server.inventory.click.ClickType
 import net.minestom.server.item.Material
-import llc.redstone.playground.menu.Menu
-import llc.redstone.playground.menu.MenuItem
-import llc.redstone.playground.menu.menuItem
 import llc.redstone.playground.database.Sandbox
+import llc.redstone.playground.menu.PItem
+import llc.redstone.playground.menu.invui.AbstractMenu
 import llc.redstone.playground.utils.color
 import llc.redstone.playground.utils.success
+import net.kyori.adventure.text.format.NamedTextColor
+import net.minestom.server.inventory.click.Click
 import java.lang.reflect.Field
 import kotlin.reflect.KClass
 
@@ -27,25 +26,24 @@ abstract class ActionProperty<V>(
     abstract fun runnable(
         field: Field,
         obj: Any,
-        event: InventoryPreClickEvent,
+        event: Click,
         sandbox: Sandbox,
         player: Player,
-        menu: Menu
+        menu: AbstractMenu
     )
 
-    open fun getDisplayItem(obj: Any, field: Field): MenuItem {
+    open fun getDisplayItem(obj: Any, field: Field): PItem {
         var material = Material.BARRIER
         val materialString = field.getFieldFromAnnotation<String>("material")
         if (materialString != null) {
             material = Material.fromKey(materialString.lowercase())
         }
 
-        val item = menuItem(material)
+        val item = PItem(material)
             .name("<yellow>${field.displayName()}")
             .description(field.description())
-            .info("<yellow>Settings", "")
-            .info(null, field.displayValue(obj))
-            .action(ClickType.LEFT_CLICK, "to edit")
+            .data("Settings", "", NamedTextColor.YELLOW)
+            .data("null", field.displayValue(obj), NamedTextColor.GRAY)
 
         return item
     }

@@ -1,20 +1,15 @@
 package llc.redstone.playground.feature.npc.events
 
 import feature.actionMenu.ActionsMenu
-import llc.redstone.playground.menu.*
 import net.minestom.server.entity.Player
-import net.minestom.server.inventory.InventoryType
 import llc.redstone.playground.feature.npc.NpcEntity
 import llc.redstone.playground.feature.npc.menu.NpcEditMenu
 import llc.redstone.playground.database.Sandbox
-import llc.redstone.playground.feature.events.EventType
 import llc.redstone.playground.managers.getSandbox
-import llc.redstone.playground.menu.invui.AbstractMenu
 import llc.redstone.playground.menu.invui.AnvilMenu
 import llc.redstone.playground.menu.items.BackItem
-import llc.redstone.playground.menu.items.ForwardItem
-import llc.redstone.playground.menu.items.ReverseItem
-import llc.redstone.playground.utils.PaginationList
+import llc.redstone.playground.menu.items.NextItem
+import llc.redstone.playground.menu.items.PreviousItem
 import llc.redstone.playground.utils.colorize
 import llc.redstone.playground.utils.err
 import xyz.xenondevs.invui.gui.Gui
@@ -52,8 +47,8 @@ class NpcEventActionsMenu(
                 "< # # # b # # # >"
             )
             .addIngredient('x', Markers.CONTENT_LIST_SLOT_HORIZONTAL) // where paged items should be put
-            .addIngredient('<', ReverseItem())
-            .addIngredient('>', ForwardItem())
+            .addIngredient('<', PreviousItem())
+            .addIngredient('>', NextItem())
             .addIngredient('b', BackItem(NpcEditMenu(npc, sandbox)))
             .setContent(content(player, sandbox))
             .build()
